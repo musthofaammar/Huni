@@ -14,6 +14,7 @@ val DmSerifFontRegular = FontFamily(Font(R.font.dm_serif_regular))
 val KanitFont = FontFamily(
     Font(R.font.kanit_regular, weight = FontWeight.Normal),
     Font(R.font.kanit_light, weight = FontWeight.Light),
+    Font(R.font.kanit_medium, weight = FontWeight.Medium),
     Font(R.font.kanit_extralight, weight = FontWeight.ExtraLight),
     Font(R.font.kanit_bold, weight = FontWeight.Bold),
     Font(R.font.kanit_extrabold, weight = FontWeight.ExtraBold),
@@ -25,6 +26,7 @@ val Typography = Typography(body1 = TextStyle(fontFamily = FontFamily.Default,
     fontSize = 16.sp),
     subtitle1 = TextStyle(fontFamily = DmSerifFontRegular, fontWeight = FontWeight.W400),
     subtitle2 = TextStyle(fontFamily = KanitFont, fontWeight = FontWeight.W300),
+    h2 = TextStyle(fontFamily = KanitFont, fontWeight = FontWeight.Medium),
     h3 = TextStyle(fontFamily = KanitFont, fontWeight = FontWeight.Normal),
     h4 = TextStyle(fontFamily = KanitFont, fontWeight = FontWeight.Light)
     /* Other default text styles to override
