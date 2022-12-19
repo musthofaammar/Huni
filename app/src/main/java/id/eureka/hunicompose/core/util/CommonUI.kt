@@ -51,7 +51,7 @@ fun GradientButton(
     titleStyle: TextStyle,
     gradient: Brush,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
@@ -329,6 +329,11 @@ fun HuniCategoryPreview() {
 fun ExpandableText(
     text: String,
     modifier: Modifier = Modifier,
+    maxLine: Int = 2,
+    textStyle: TextStyle = MaterialTheme.typography.h4.copy(
+        color = colorResource(id = R.color.silver_chalice),
+        fontSize = 12.sp
+    ),
     showMoreText: String = "...Read More",
     showMoreStyle: SpanStyle = SpanStyle(fontFamily = KanitFont,
         fontWeight = FontWeight.Normal,
@@ -346,12 +351,11 @@ fun ExpandableText(
     var isExpanded by remember { mutableStateOf(false) }
     var isClickable by remember { mutableStateOf(false) }
     var lastCharIndex by remember { mutableStateOf(0) }
-    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) Int.MAX_VALUE else 4)
+    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) Int.MAX_VALUE else maxLine)
 
     Box(
         modifier = modifier
-            .clickable { isExpanded = !isExpanded }
-            .padding(horizontal = 24.dp),
+            .clickable { isExpanded = !isExpanded },
     ) {
         val annotatedText = buildAnnotatedString {
             if (isClickable) {
@@ -373,16 +377,14 @@ fun ExpandableText(
 
         Text(
             text = annotatedText,
-            style = MaterialTheme.typography.h4,
-            color = colorResource(id = R.color.silver_chalice),
-            fontSize = 12.sp,
+            style = textStyle,
             maxLines = animateReadMore,
             textAlign = TextAlign.Justify,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { textLayoutResult ->
                 if (!isExpanded && textLayoutResult.hasVisualOverflow) {
                     isClickable = true
-                    lastCharIndex = textLayoutResult.getLineEnd(4 - 1)
+                    lastCharIndex = textLayoutResult.getLineEnd(maxLine - 1)
                 }
             },
             modifier = Modifier

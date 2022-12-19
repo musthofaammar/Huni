@@ -57,7 +57,9 @@ fun DetailInfo(
         }
 
         SectionWithTitle(title = "Description") {
-            ExpandableText(text = description)
+            ExpandableText(text = description,
+                maxLine = 4,
+                modifier = Modifier.padding(horizontal = 24.dp))
         }
     }
 }
