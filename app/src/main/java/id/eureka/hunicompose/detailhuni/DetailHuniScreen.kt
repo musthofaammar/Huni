@@ -1,5 +1,6 @@
 package id.eureka.hunicompose.detailhuni
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -28,28 +30,89 @@ import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
+import id.eureka.hunicompose.core.theme.KanitFont
+import id.eureka.hunicompose.core.util.GradientButton
+import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
 import id.eureka.hunicompose.home.HuniRentPeriod
 
 @Composable
 fun DetailHuniScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Column(
+    Box(modifier = modifier) {
+        Column {
+            HeaderDetailHuni()
+
+            HuniGeneralInfo(
+                name = "Griya Asri Cempaka Raya",
+                address = "Jl. Tukad Balian, Renon, No. 78",
+                ownerName = "Ahmad Lee",
+                star = 4.7
+            )
+
+            HuniDetailInfoTab()
+        }
+
+        HuniBottomInfo(
+            price = 24000000.0,
+            period = HuniRentPeriod.Month,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+@Composable
+fun HuniBottomInfo(
+    price: Double,
+    period: HuniRentPeriod,
+    modifier: Modifier = Modifier,
+) {
+//    var isShowBottomInfo by remember {
+//        mutableStateOf(true)
+//    }
+//
+//    AnimatedVisibility(visible = isShowBottomInfo) {
+//
+//    }
+
+    Surface(
+        elevation = 4.dp,
+        color = MaterialTheme.colors.surface,
         modifier = modifier
     ) {
-        HeaderDetailHuni()
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Column {
+                Text(text = "Price",
+                    style = MaterialTheme.typography.h3,
+                    fontSize = 12.sp,
+                    color = colorResource(id = R.color.deep_sapphire))
 
-        HuniGeneralInfo(
-            name = "Griya Asri Cempaka Raya",
-            address = "Jl. Tukad Balian, Renon, No. 78",
-            ownerName = "Ahmad Lee",
-            star = 4.7,
-            price = 24000000.0,
-            period = HuniRentPeriod.Month
-        )
+                Text(text = "IDR ${Utils.numberFormatter(price)}/${period.period}",
+                    style = MaterialTheme.typography.h2,
+                    color = colorResource(id = R.color.deep_sapphire),
+                    fontSize = 18.sp)
+            }
 
-        HuniDetailInfoTab()
+            GradientButton(
+                title = "Rent",
+                titleColor = Color.White,
+                titleStyle = MaterialTheme.typography.h4.copy(fontSize = 14.sp),
+                gradient = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(id = R.color.denim),
+                        colorResource(id = R.color.deep_sapphire),
+                    ),
+                ),
+                onClick = {},
+                modifier = Modifier.width(120.dp)
+            )
+        }
     }
 }
 
@@ -110,9 +173,7 @@ fun HuniGeneralInfo(
     address: String,
     ownerName: String,
     star: Double,
-    price: Double,
-    period: HuniRentPeriod,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -360,7 +421,7 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier) {
 fun ImageIndicator(
     itemCount: Int,
     pagerState: PagerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -405,9 +466,15 @@ fun HuniGeneralInfo() {
             name = "Griya Asri Cempaka Raya",
             address = "Jl. Tukad Balian, Renon, No. 78",
             ownerName = "Ahmad Lee",
-            star = 4.7,
-            price = 24000000.0,
-            period = HuniRentPeriod.Month
+            star = 4.7
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HuniBottomInfoPreview() {
+    HuniComposeTheme {
+        HuniBottomInfo(price = 240000000.0, period = HuniRentPeriod.Month)
     }
 }

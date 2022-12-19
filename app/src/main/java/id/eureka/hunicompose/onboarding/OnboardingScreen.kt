@@ -17,6 +17,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -76,13 +77,18 @@ fun OnBoardingScreen(
                 color = colorResource(id = R.color.silver_chalice),
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 48.dp))
 
-            GradientButton(title = "Get Started",
+            GradientButton(
+                title = "Get Started",
                 titleColor = Color.White,
-                titleFont = KanitFont,
-                gradient = Brush.verticalGradient(colors = listOf(colorResource(id = R.color.denim),
-                    colorResource(id = R.color.deep_sapphire)))){
-
-            }
+                titleStyle = MaterialTheme.typography.h3,
+                gradient = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(id = R.color.denim),
+                        colorResource(id = R.color.deep_sapphire),
+                    ),
+                ),
+                onClick = {},
+            )
         }
     }
 }

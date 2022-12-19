@@ -1,9 +1,12 @@
 package id.eureka.hunicompose.core.util
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -12,8 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -25,9 +27,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,15 +48,17 @@ import id.eureka.hunicompose.core.theme.KanitFont
 fun GradientButton(
     title: String,
     titleColor: Color,
-    titleFont: FontFamily,
+    titleStyle: TextStyle,
     gradient: Brush,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
         shape = RoundedCornerShape(10.dp),
-        contentPadding = PaddingValues()
+        contentPadding = PaddingValues(),
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
@@ -57,7 +67,7 @@ fun GradientButton(
                 .background(gradient)
                 .padding(vertical = 12.dp), contentAlignment = Alignment.Center
         ) {
-            Text(text = title, color = titleColor, fontFamily = titleFont, letterSpacing = 0.3.sp)
+            Text(text = title, color = titleColor, style = titleStyle, letterSpacing = 0.3.sp)
         }
     }
 }
@@ -116,7 +126,7 @@ fun CustomTextField(
     hint: String,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
-    onTextChanged: (String) -> Unit
+    onTextChanged: (String) -> Unit,
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -217,7 +227,7 @@ fun SearchBar(
 fun SectionWithTitleAndSeeAll(
     title: String,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -252,9 +262,34 @@ fun SectionWithTitleAndSeeAll(
     }
 }
 
+@Composable
+fun SectionWithTitle(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.h3,
+            fontSize = 14.sp,
+            color = colorResource(id = R.color.onyx),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    bottom = 12.dp,
+                    start = 24.dp,
+                    end = 24.dp
+                )
+        )
+
+        content()
+    }
+}
+
 fun Modifier.customTabIndicatorOffset(
     currentTabPosition: TabPosition,
-    tabWidth: Dp
+    tabWidth: Dp,
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
         name = "customTabIndicatorOffset"
@@ -286,6 +321,75 @@ fun HuniCategoryPreview() {
             icon = null,
             iconFromDrawable = painterResource(id = R.drawable.hotel),
             iconColor = colorResource(id = R.color.deep_sapphire),
+        )
+    }
+}
+
+@Composable
+fun ExpandableText(
+    text: String,
+    modifier: Modifier = Modifier,
+    maxLine: Int = 2,
+    textStyle: TextStyle = MaterialTheme.typography.h4.copy(
+        color = colorResource(id = R.color.silver_chalice),
+        fontSize = 12.sp
+    ),
+    showMoreText: String = "...Read More",
+    showMoreStyle: SpanStyle = SpanStyle(fontFamily = KanitFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = colorResource(
+            id = R.color.deep_sapphire)),
+    showLessText: String = "Read Less",
+    showLessStyle: SpanStyle = SpanStyle(fontFamily = KanitFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = colorResource(
+            id = R.color.deep_sapphire)),
+) {
+
+    var isExpanded by remember { mutableStateOf(false) }
+    var isClickable by remember { mutableStateOf(false) }
+    var lastCharIndex by remember { mutableStateOf(0) }
+    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) Int.MAX_VALUE else maxLine)
+
+    Box(
+        modifier = modifier
+            .clickable { isExpanded = !isExpanded },
+    ) {
+        val annotatedText = buildAnnotatedString {
+            if (isClickable) {
+                if (isExpanded) {
+                    append(text)
+                    withStyle(style = showLessStyle) { append(showLessText) }
+                } else {
+                    val adjustText =
+                        text.substring(startIndex = 0, endIndex = lastCharIndex)
+                            .dropLast(showMoreText.length)
+                            .dropLastWhile { Character.isWhitespace(it) || it == '.' }
+                    append(adjustText)
+                    withStyle(style = showMoreStyle) { append(showMoreText) }
+                }
+            } else {
+                append(text)
+            }
+        }
+
+        Text(
+            text = annotatedText,
+            style = textStyle,
+            maxLines = animateReadMore,
+            textAlign = TextAlign.Justify,
+            overflow = TextOverflow.Ellipsis,
+            onTextLayout = { textLayoutResult ->
+                if (!isExpanded && textLayoutResult.hasVisualOverflow) {
+                    isClickable = true
+                    lastCharIndex = textLayoutResult.getLineEnd(maxLine - 1)
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize()
         )
     }
 }
