@@ -1,6 +1,5 @@
 package id.eureka.hunicompose.detailhuni
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,11 +29,12 @@ import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
-import id.eureka.hunicompose.core.theme.KanitFont
 import id.eureka.hunicompose.core.util.GradientButton
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
 import id.eureka.hunicompose.home.HuniRentPeriod
+import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @Composable
 fun DetailHuniScreen(
@@ -88,15 +88,19 @@ fun HuniBottomInfo(
                 .fillMaxWidth()
         ) {
             Column {
-                Text(text = "Price",
+                Text(
+                    text = "Price",
                     style = MaterialTheme.typography.h3,
                     fontSize = 12.sp,
-                    color = colorResource(id = R.color.deep_sapphire))
+                    color = colorResource(id = R.color.deep_sapphire)
+                )
 
-                Text(text = "IDR ${Utils.numberFormatter(price)}/${period.period}",
+                Text(
+                    text = "IDR ${Utils.numberFormatter(price)}/${period.period}",
                     style = MaterialTheme.typography.h2,
                     color = colorResource(id = R.color.deep_sapphire),
-                    fontSize = 18.sp)
+                    fontSize = 18.sp
+                )
             }
 
             GradientButton(
@@ -116,9 +120,12 @@ fun HuniBottomInfo(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HuniDetailInfoTab() {
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+    val tabPagerState = rememberPagerState()
+//    var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Details", "Maps", "Reviews")
 
     val density = LocalDensity.current
@@ -133,27 +140,31 @@ fun HuniDetailInfoTab() {
     ScrollableTabRow(
         edgePadding = 24.dp,
         backgroundColor = Color.White,
-        selectedTabIndex = selectedTabIndex,
+        selectedTabIndex = tabPagerState.currentPage,
         divider = { TabRowDefaults.Divider(color = Color.Transparent) },
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
                 modifier = Modifier.customTabIndicatorOffset(
-                    tabPositions[selectedTabIndex],
-                    tabWidths[selectedTabIndex]
+                    tabPositions[tabPagerState.currentPage],
+                    tabWidths[tabPagerState.currentPage]
                 )
             )
         },
     ) {
         tabs.forEachIndexed { tabIndex, s ->
             Tab(
-                selected = tabIndex == selectedTabIndex,
-                onClick = { selectedTabIndex = tabIndex },
+                selected = tabIndex == tabPagerState.currentPage,
+                onClick = {
+                    scope.launch {
+                        tabPagerState.scrollToPage(tabIndex)
+                    }
+                },
                 text = {
                     Text(
                         text = s,
                         style = MaterialTheme.typography.h3,
                         fontSize = 18.sp,
-                        color = if (selectedTabIndex == tabIndex) colorResource(
+                        color = if (tabPagerState.currentPage == tabIndex) colorResource(
                             id = R.color.deep_sapphire
                         ) else colorResource(id = R.color.silver_chalice),
                         onTextLayout = { textLayoutResult ->
@@ -163,6 +174,18 @@ fun HuniDetailInfoTab() {
                     )
                 }
             )
+        }
+    }
+
+    HorizontalPager(count = tabs.size, state = tabPagerState) { page ->
+        when (page) {
+            0 -> DetailHuniTab(
+                facilities = Utils.dummyFacilities(),
+                description = "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn"
+            )
+
+            1 -> MapTab()
+            2 -> ReviewsTab(reviewCount = Random.nextInt(5, 10))
         }
     }
 }
