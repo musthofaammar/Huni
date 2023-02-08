@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.flowlayout.FlowColumn
+import com.google.accompanist.flowlayout.FlowRow
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.ExpandableText
@@ -34,14 +35,14 @@ fun DetailHuniTab(
         modifier = modifier,
     ) {
         SectionWithTitle(title = "Facilities") {
-            LazyVerticalGrid(
-                contentPadding = PaddingValues(horizontal = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                columns = GridCells.Adaptive(92.dp),
-                modifier = Modifier.fillMaxWidth()
+            FlowRow(
+                mainAxisSpacing = 16.dp,
+                crossAxisSpacing = 8.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
             ) {
-                items(facilities) { item ->
+                for (item in facilities) {
                     FacilityItem(
                         count = item.count,
                         type = item.type,
@@ -50,14 +51,30 @@ fun DetailHuniTab(
                     )
                 }
             }
+//            LazyVerticalGrid(
+//                contentPadding = PaddingValues(horizontal = 24.dp),
+//                verticalArrangement = Arrangement.spacedBy(8.dp),
+//                horizontalArrangement = Arrangement.spacedBy(16.dp),
+//                columns = GridCells.Adaptive(92.dp),
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                items(facilities) { item ->
+//                    FacilityItem(
+//                        count = item.count,
+//                        type = item.type,
+//                        icon = item.icon,
+//                        iconImage = item.iconImage
+//                    )
+//                }
+//            }
         }
 
         SectionWithTitle(title = "Description") {
-//            ExpandableText(
-//                text = description,
-//                maxLine = 4,
-//                modifier = Modifier.padding(horizontal = 24.dp)
-//            )
+            ExpandableText(
+                text = description,
+                maxLine = 4,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
         }
     }
 }

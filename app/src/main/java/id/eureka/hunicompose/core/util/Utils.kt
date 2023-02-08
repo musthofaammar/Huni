@@ -49,4 +49,14 @@ object Utils {
         )
     }
 
+    fun dummyVirtualTourImages(): List<Int> {
+        return listOf(
+            R.drawable.image360_3,
+            R.drawable.sighisoara_sphere,
+            R.drawable.sighisoara_sphere_2,
+            R.drawable.image360_3,
+            R.drawable.sighisoara_sphere,
+            R.drawable.sighisoara_sphere_2,
+        )
+    }
 }
