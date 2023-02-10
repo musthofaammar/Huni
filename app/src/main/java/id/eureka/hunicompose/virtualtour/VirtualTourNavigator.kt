@@ -1,9 +1,16 @@
+@file:OptIn(ExperimentalSnapperApi::class)
+
 package id.eureka.hunicompose.virtualtour
 
+import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -18,35 +25,42 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import dev.chrisbanes.snapper.SnapOffsets
+import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.Utils
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalSnapperApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun VirtualTourNavigator(
+    viewModel: VirtualTourViewModel,
     modifier: Modifier = Modifier,
 ) {
 
-    val currentIndex by remember {
-        mutableStateOf(0)
-    }
+    val currentIndex by viewModel.currentIndex.collectAsState()
+    val items by viewModel.imageUrls.collectAsState()
 
-    val pagerState = rememberPagerState()
-
-    val items = Utils.dummyVirtualTourImages().chunked(5)
+    val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxWidth()
+            .padding(24.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(colorResource(id = R.color.white_25))
-            .padding(18.dp)
     ) {
+
+        Spacer(modifier = Modifier.height(18.dp))
 
         Box(
             modifier = Modifier
@@ -54,7 +68,6 @@ fun VirtualTourNavigator(
                 .height(5.dp)
                 .clip(RoundedCornerShape(100.dp))
                 .background(colorResource(id = R.color.silver_chalice))
-                .padding(bottom = 8.dp)
         )
 
         Text(
@@ -64,70 +77,37 @@ fun VirtualTourNavigator(
             fontSize = 16.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp, start = 18.dp, end = 18.dp, top = 8.dp)
         )
 
-        val horizontalPadding = 16.dp
-        val itemWidth = 340.dp
-        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-        val contentPadding = PaddingValues(
-            start = horizontalPadding,
-            end = (screenWidth - itemWidth + horizontalPadding)
-        )
-
-        HorizontalPager(
-            count = items.size,
-            itemSpacing = 8.dp,
-            state = pagerState,
-            modifier = Modifier.fillMaxWidth()
-        ) { page ->
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                for (item in items[page]) {
-                    Card(
-                        shape = RoundedCornerShape(14.dp),
-                        border = if (page == currentIndex) BorderStroke(
-                            1.dp,
-                            colorResource(id = R.color.deep_sapphire)
-                        ) else null
-                    ) {
-                        Image(
-                            painter = painterResource(id = item),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .width(52.dp)
-                                .height(52.dp)
-                        )
+        LazyRow(
+            state = lazyListState,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            flingBehavior = rememberSnapperFlingBehavior(lazyListState = lazyListState,
+                snapOffsetForItem = SnapOffsets.Start),
+            modifier = Modifier.padding(PaddingValues(start = 18.dp, end = 18.dp, bottom = 18.dp))
+        ) {
+            itemsIndexed(items) { index, item ->
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    border = if (index == currentIndex) BorderStroke(1.dp,
+                        colorResource(id = R.color.deep_sapphire)) else null,
+                    modifier = Modifier.clickable {
+                        scope.launch {
+                            viewModel.setIndex(index)
+                        }
                     }
+                ) {
+                    GlideImage(
+                        model = item, contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .width(52.dp)
+                            .height(52.dp))
+
                 }
             }
         }
-
-//        LazyRow(
-//            contentPadding = PaddingValues(horizontal = 18.dp),
-//            horizontalArrangement = Arrangement.spacedBy(6.dp)
-//        ) {
-//            itemsIndexed(Utils.dummyVirtualTourImages()) { index, item ->
-//                Card(
-//                    shape = RoundedCornerShape(14.dp),
-//                    border = if (index == currentIndex) BorderStroke(1.dp,
-//                        colorResource(id = R.color.deep_sapphire)) else null
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = item),
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .width(52.dp)
-//                            .height(52.dp)
-//                    )
-//                }
-//            }
-//        }
     }
 }
 
@@ -135,6 +115,6 @@ fun VirtualTourNavigator(
 @Composable
 fun VirtualTourNavigatorPreview() {
     HuniComposeTheme {
-        VirtualTourNavigator()
+        VirtualTourNavigator(VirtualTourViewModel())
     }
 }
