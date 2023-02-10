@@ -4,9 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -15,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +37,7 @@ fun VirtualTourNavigator(
 
     val pagerState = rememberPagerState()
 
-    val items = Utils.dummyVirtualTourImages()
+    val items = Utils.dummyVirtualTourImages().chunked(5)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,40 +48,62 @@ fun VirtualTourNavigator(
             .padding(18.dp)
     ) {
 
-        Box(modifier = Modifier
-            .width(60.dp)
-            .height(5.dp)
-            .clip(RoundedCornerShape(100.dp))
-            .background(colorResource(id = R.color.silver_chalice))
-            .padding(bottom = 8.dp))
+        Box(
+            modifier = Modifier
+                .width(60.dp)
+                .height(5.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(colorResource(id = R.color.silver_chalice))
+                .padding(bottom = 8.dp)
+        )
 
-        Text(text = "Virtual Tour",
+        Text(
+            text = "Virtual Tour",
             style = MaterialTheme.typography.h3,
             color = Color.Black,
             fontSize = 16.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp))
+                .padding(bottom = 16.dp)
+        )
+
+        val horizontalPadding = 16.dp
+        val itemWidth = 340.dp
+        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        val contentPadding = PaddingValues(
+            start = horizontalPadding,
+            end = (screenWidth - itemWidth + horizontalPadding)
+        )
 
         HorizontalPager(
             count = items.size,
             itemSpacing = 8.dp,
             state = pagerState,
-            modifier = Modifier.fillMaxWidth()) { page ->
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
 
-            Card(
-                shape = RoundedCornerShape(14.dp),
-                border = if (page == currentIndex) BorderStroke(1.dp,
-                    colorResource(id = R.color.deep_sapphire)) else null
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Image(
-                    painter = painterResource(id = items[page]),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(52.dp)
-                        .height(52.dp)
-                )
+                for (item in items[page]) {
+                    Card(
+                        shape = RoundedCornerShape(14.dp),
+                        border = if (page == currentIndex) BorderStroke(
+                            1.dp,
+                            colorResource(id = R.color.deep_sapphire)
+                        ) else null
+                    ) {
+                        Image(
+                            painter = painterResource(id = item),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .width(52.dp)
+                                .height(52.dp)
+                        )
+                    }
+                }
             }
         }
 
