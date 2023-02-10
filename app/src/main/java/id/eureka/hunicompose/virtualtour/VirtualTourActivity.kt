@@ -2,9 +2,10 @@ package id.eureka.hunicompose.virtualtour
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import id.eureka.hunicompose.R
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -16,8 +17,6 @@ import com.bumptech.glide.request.transition.Transition
 import com.panoramagl.PLImage
 import com.panoramagl.PLManager
 import com.panoramagl.PLSphericalPanorama
-import com.panoramagl.utils.PLUtils
-import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.databinding.ActivityVirtualTourBinding
 import kotlinx.coroutines.launch
 
@@ -44,7 +43,7 @@ class VirtualTourActivity : AppCompatActivity() {
         }
 
         val panorama = PLSphericalPanorama()
-        panorama.camera.lookAt(30.0f, 90.0f)
+//        panorama.camera.lookAt(30.0f, 90.0f)
         plManager.panorama = panorama
 
         lifecycleScope.launch {
@@ -59,6 +58,7 @@ class VirtualTourActivity : AppCompatActivity() {
                                 resource: Bitmap,
                                 transition: Transition<in Bitmap>?,
                             ) {
+                                fadeInPanoramaGL(panorama)
                                 panorama.setImage(PLImage(resource))
                             }
 
@@ -96,5 +96,15 @@ class VirtualTourActivity : AppCompatActivity() {
         return plManager.onTouchEvent(event!!)
     }
 
+    private fun fadeInPanoramaGL(panoramaGL: PLSphericalPanorama) {
+        val fadeIn: Animation = object : Animation() {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+                panoramaGL.setAlpha(interpolatedTime)
+            }
+        }
+
+        fadeIn.duration = 1000
+        binding.root.startAnimation(fadeIn)
+    }
 
 }
