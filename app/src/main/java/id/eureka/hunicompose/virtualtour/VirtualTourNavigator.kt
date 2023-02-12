@@ -38,7 +38,7 @@ fun VirtualTourNavigator(
 ) {
 
     val currentIndex by viewModel.currentIndex.collectAsState()
-    val items by viewModel.imageUrls.collectAsState()
+    val items by viewModel.rooms.collectAsState()
 
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
@@ -91,7 +91,7 @@ fun VirtualTourNavigator(
                     }
                 ) {
                     GlideImage(
-                        model = item, contentDescription = null,
+                        model = item.imageUrl, contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .width(52.dp)

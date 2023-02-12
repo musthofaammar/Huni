@@ -19,7 +19,6 @@
             android:name=".virtualtour.VirtualTourActivity"
             android:exported="false"
             android:theme="@style/Theme.HuniCompose">
-
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

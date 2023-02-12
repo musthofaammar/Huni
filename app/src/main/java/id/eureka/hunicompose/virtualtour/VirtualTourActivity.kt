@@ -43,15 +43,17 @@ class VirtualTourActivity : AppCompatActivity() {
         }
 
         val panorama = PLSphericalPanorama()
-//        panorama.camera.lookAt(30.0f, 90.0f)
         plManager.panorama = panorama
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.currentIndex.collect { index ->
+                    val room = viewModel.rooms.value[index]
+                    binding.tvRoom.text = room.roomName
+
                     Glide.with(this@VirtualTourActivity)
                         .asBitmap()
-                        .load(viewModel.imageUrls.value[index])
+                        .load(room.imageUrl)
                         .override(1024, 1024)
                         .into(object : CustomTarget<Bitmap>() {
                             override fun onResourceReady(
@@ -74,6 +76,10 @@ class VirtualTourActivity : AppCompatActivity() {
     private fun setNavigator() {
         binding.virtualTourNavigator.setContent {
             VirtualTourNavigator(viewModel)
+        }
+
+        binding.btnBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 

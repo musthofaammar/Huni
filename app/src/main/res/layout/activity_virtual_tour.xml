@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:textSize="18sp"
         android:id="@+id/tv_room"
         android:textColor="@color/deep_sapphire"
         android:layout_width="wrap_content"
@@ -24,6 +25,7 @@
         app:layout_constraintBottom_toBottomOf="@id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/kanit_regular"
         app:layout_constraintTop_toTopOf="@id/btn_back"
         tools:text="Kitchen" />
 
