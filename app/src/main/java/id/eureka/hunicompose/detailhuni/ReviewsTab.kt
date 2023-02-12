@@ -126,7 +126,7 @@ fun ReviewItem(
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = 4.dp,
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -150,13 +150,13 @@ fun ReviewItem(
                 }
             }
 
-            ExpandableText(
-                text = description,
-                textStyle = MaterialTheme.typography.h4.copy(
-                    fontSize = 10.sp,
-                    color = colorResource(id = R.color.onyx)
-                )
-            )
+//            ExpandableText(
+//                text = description,
+//                textStyle = MaterialTheme.typography.h4.copy(
+//                    fontSize = 10.sp,
+//                    color = colorResource(id = R.color.onyx)
+//                )
+//            )
         }
     }
 }

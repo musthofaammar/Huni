@@ -3,8 +3,11 @@ package id.eureka.hunicompose.detailhuni
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -41,17 +44,23 @@ fun DetailHuniScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
-        Column {
-            HeaderDetailHuni()
+        LazyColumn {
+            item {
+                HeaderDetailHuni()
+            }
 
-            HuniGeneralInfo(
-                name = "Griya Asri Cempaka Raya",
-                address = "Jl. Tukad Balian, Renon, No. 78",
-                ownerName = "Ahmad Lee",
-                star = 4.7
-            )
+            item {
+                HuniGeneralInfo(
+                    name = "Griya Asri Cempaka Raya",
+                    address = "Jl. Tukad Balian, Renon, No. 78",
+                    ownerName = "Ahmad Lee",
+                    star = 4.7
+                )
+            }
 
-            HuniDetailInfoTab()
+            item {
+                HuniDetailInfoTab()
+            }
         }
 
         HuniBottomInfo(
@@ -124,9 +133,9 @@ fun HuniBottomInfo(
 @Composable
 fun HuniDetailInfoTab() {
     val scope = rememberCoroutineScope()
+    val tabs = listOf("Details", "Maps", "Reviews")
     val tabPagerState = rememberPagerState()
 //    var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Details", "Maps", "Reviews")
 
     val density = LocalDensity.current
     val tabWidths = remember {
@@ -177,8 +186,11 @@ fun HuniDetailInfoTab() {
         }
     }
 
-    HorizontalPager(count = tabs.size, state = tabPagerState) { page ->
+    HorizontalPager(count = tabs.size,
+        state = tabPagerState,
+        contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)) { page ->
         when (page) {
+//            0 -> ReviewsTab(reviewCount = 5)
             0 -> DetailHuniTab(
                 facilities = Utils.dummyFacilities(),
                 description = "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn"
