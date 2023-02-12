@@ -1,13 +1,12 @@
 package id.eureka.hunicompose.detailhuni
 
+import android.content.Intent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,6 +36,7 @@ import id.eureka.hunicompose.core.util.GradientButton
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
 import id.eureka.hunicompose.home.HuniRentPeriod
+import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -186,9 +187,11 @@ fun HuniDetailInfoTab() {
         }
     }
 
-    HorizontalPager(count = tabs.size,
+    HorizontalPager(
+        count = tabs.size,
         state = tabPagerState,
-        contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)) { page ->
+        contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)
+    ) { page ->
         when (page) {
 //            0 -> ReviewsTab(reviewCount = 5)
             0 -> DetailHuniTab(
@@ -210,6 +213,8 @@ fun HuniGeneralInfo(
     star: Double,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -278,7 +283,9 @@ fun HuniGeneralInfo(
 
             Button(
                 shape = RoundedCornerShape(8.dp),
-                onClick = {}
+                onClick = {
+                    context.startActivity(Intent(context, VirtualTourActivity::class.java))
+                }
             ) {
                 Text(
                     text = "Virtual Tour",

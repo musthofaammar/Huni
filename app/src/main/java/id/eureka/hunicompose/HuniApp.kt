@@ -23,6 +23,8 @@ import id.eureka.hunicompose.core.routes.NavigationItem
 import id.eureka.hunicompose.core.routes.Screen
 import id.eureka.hunicompose.detailhuni.DetailHuniScreen
 import id.eureka.hunicompose.home.HomeScreen
+import id.eureka.hunicompose.onboarding.OnBoardingScreen
+import id.eureka.hunicompose.splash.SplashScreen
 
 @Composable
 fun HuniApp(
@@ -32,15 +34,36 @@ fun HuniApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val listNoBottomBar =
+        listOf(Screen.DetailHuni.route, Screen.Splash.route, Screen.OnBoarding.route)
+
     Scaffold(
-        bottomBar = { if (currentRoute != Screen.DetailHuni.route) BottomBar(navController) },
+        bottomBar = { if (currentRoute !in listNoBottomBar) BottomBar(navController) },
         modifier = modifier
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = Screen.Splash.route,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(Screen.Splash.route) {
+                SplashScreen(goToNextScreen = {
+                    navController.navigate(Screen.OnBoarding.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                    }
+                })
+            }
+            composable(Screen.OnBoarding.route) {
+                OnBoardingScreen(goToNextScreen = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.OnBoarding.route) {
+                            inclusive = true
+                        }
+                    }
+                })
+            }
             composable(Screen.Home.route) {
                 HomeScreen(onItemClick = {
                     navController.navigate(Screen.DetailHuni.route)
