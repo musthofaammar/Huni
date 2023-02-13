@@ -43,11 +43,12 @@ import kotlin.random.Random
 @Composable
 fun DetailHuniScreen(
     modifier: Modifier = Modifier,
+    onBack: () -> Unit
 ) {
     Box(modifier = modifier) {
         LazyColumn {
             item {
-                HeaderDetailHuni()
+                HeaderDetailHuni(onBack = onBack)
             }
 
             item {
@@ -78,13 +79,6 @@ fun HuniBottomInfo(
     period: HuniRentPeriod,
     modifier: Modifier = Modifier,
 ) {
-//    var isShowBottomInfo by remember {
-//        mutableStateOf(true)
-//    }
-//
-//    AnimatedVisibility(visible = isShowBottomInfo) {
-//
-//    }
 
     Surface(
         elevation = 4.dp,
@@ -134,9 +128,11 @@ fun HuniBottomInfo(
 @Composable
 fun HuniDetailInfoTab() {
     val scope = rememberCoroutineScope()
-    val tabs = listOf("Details", "Maps", "Reviews")
+    val tabs = remember {
+        listOf("Details", "Maps", "Reviews")
+    }
+
     val tabPagerState = rememberPagerState()
-//    var selectedTabIndex by remember { mutableStateOf(0) }
 
     val density = LocalDensity.current
     val tabWidths = remember {
@@ -193,7 +189,6 @@ fun HuniDetailInfoTab() {
         contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)
     ) { page ->
         when (page) {
-//            0 -> ReviewsTab(reviewCount = 5)
             0 -> DetailHuniTab(
                 facilities = Utils.dummyFacilities(),
                 description = "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn"
@@ -390,13 +385,15 @@ fun HuniGeneralInfo(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HeaderDetailHuni(modifier: Modifier = Modifier) {
+fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
 
-    val images = listOf(
-        R.drawable.hotel_1,
-        R.drawable.hotel_3,
-        R.drawable.hotel_4
-    )
+    val images = remember {
+        listOf(
+            R.drawable.hotel_1,
+            R.drawable.hotel_3,
+            R.drawable.hotel_5
+        )
+    }
 
     val pagerState = rememberPagerState()
 
@@ -419,7 +416,7 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier) {
         }
 
         IconButton(
-            onClick = {},
+            onClick = onBack,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 24.dp, start = 12.dp)
@@ -496,7 +493,7 @@ fun Indicator(modifier: Modifier = Modifier, isSelected: Boolean) {
 @Composable
 fun DetailHuniScreenPreview() {
     HuniComposeTheme {
-        DetailHuniScreen()
+        DetailHuniScreen(onBack = {})
     }
 }
 

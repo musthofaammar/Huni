@@ -66,11 +66,15 @@ fun HuniApp(
             }
             composable(Screen.Home.route) {
                 HomeScreen(onItemClick = {
-                    navController.navigate(Screen.DetailHuni.route)
+                    navController.navigate(Screen.DetailHuni.route) {
+                        popUpTo(Screen.Home.route)
+                    }
                 })
             }
             composable(Screen.DetailHuni.route) {
-                DetailHuniScreen()
+                DetailHuniScreen(onBack = {
+                    navController.navigateUp()
+                })
             }
         }
     }

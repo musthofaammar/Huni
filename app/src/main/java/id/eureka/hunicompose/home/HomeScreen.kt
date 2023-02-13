@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSnapperApi::class)
+
 package id.eureka.hunicompose.home
 
 import androidx.compose.animation.animateContentSize
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -28,6 +31,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import dev.chrisbanes.snapper.SnapOffsets
+import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.theme.KanitFont
@@ -70,22 +76,6 @@ fun HomeScreen(
             HuniPopular(modifier = Modifier.padding(top = 32.dp), onItemClick = onItemClick)
         }
     }
-
-//    Column(modifier = modifier) {
-//
-//        HomeHeader(userName = "Naufintya", location = "Bali, Indonesia")
-//
-//        SearchBar(
-//            hint = "Search Places",
-//            query = "",
-//            onTextChanged = {},
-//            modifier = Modifier.padding(horizontal = 24.dp)
-//        )
-//
-//        HuniNearbyLocations()
-//
-//        HuniPopular(modifier = Modifier.padding(top = 32.dp))
-//    }
 }
 
 @Composable
@@ -223,13 +213,21 @@ fun HuniNearbyLocations(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit
 ) {
+
+    val lazyListState = rememberLazyListState()
+
     SectionWithTitleAndSeeAll(
         title = "Nearby Your Location",
         modifier = modifier
     ) {
         LazyRow(
+            state = lazyListState,
             contentPadding = PaddingValues(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            flingBehavior = rememberSnapperFlingBehavior(
+                lazyListState = lazyListState,
+                snapOffsetForItem = SnapOffsets.Start
+            ),
         ) {
             items(Utils.dummyHuniItem()) { item ->
                 HuniItemShort(
@@ -275,22 +273,6 @@ fun HuniPopular(
                 )
             }
         }
-
-//        LazyColumn(
-//            contentPadding = PaddingValues(horizontal = 24.dp),
-//            verticalArrangement = Arrangement.spacedBy(12.dp)
-//        ) {
-//            items(Utils.dummyHuniItem()) { item ->
-//                HuniItemLong(
-//                    name = item.name,
-//                    address = item.address,
-//                    star = item.rate,
-//                    price = item.price,
-//                    period = item.rentPeriod,
-//                    image = painterResource(id = item.image)
-//                )
-//            }
-//        }
     }
 }
 

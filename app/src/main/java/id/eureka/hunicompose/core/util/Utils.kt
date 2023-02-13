@@ -9,7 +9,9 @@ import id.eureka.hunicompose.R
 import id.eureka.hunicompose.detailhuni.model.Facilities
 import id.eureka.hunicompose.home.HuniRentPeriod
 import id.eureka.hunicompose.home.model.Huni
+import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.random.Random
 
 object Utils {
 
@@ -19,12 +21,16 @@ object Utils {
     }
 
     fun dummyHuniItem(): List<Huni> {
+
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.CEILING
+
         return listOf(
             Huni(
                 name = "Griya Asri Cempaka Raya",
                 address = "Jl. Tukad Balian, Renon, No.78",
                 image = R.drawable.hotel_1,
-                rate = 4.7,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
                 price = 24000000.0,
                 rentPeriod = HuniRentPeriod.Month
             ),
@@ -32,10 +38,50 @@ object Utils {
                 name = "Hotel Autumn Center",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_2,
-                rate = 4.8,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
                 price = 1600000.0,
                 rentPeriod = HuniRentPeriod.Day
-            )
+            ),
+            Huni(
+                name = "Hotel Autumn Center",
+                address = "Jl. Bedahulu X No.29",
+                image = R.drawable.hotel_1,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
+                price = 1600000.0,
+                rentPeriod = HuniRentPeriod.Day
+            ),
+            Huni(
+                name = "Hotel Autumn Center",
+                address = "Jl. Bedahulu X No.29",
+                image = R.drawable.hotel_2,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
+                price = 1600000.0,
+                rentPeriod = HuniRentPeriod.Day
+            ),
+            Huni(
+                name = "Hotel Autumn Center",
+                address = "Jl. Bedahulu X No.29",
+                image = R.drawable.hotel_1,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
+                price = 1600000.0,
+                rentPeriod = HuniRentPeriod.Day
+            ),
+            Huni(
+                name = "Hotel Autumn Center",
+                address = "Jl. Bedahulu X No.29",
+                image = R.drawable.hotel_2,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
+                price = 1600000.0,
+                rentPeriod = HuniRentPeriod.Day
+            ),
+            Huni(
+                name = "Hotel Autumn Center",
+                address = "Jl. Bedahulu X No.29",
+                image = R.drawable.hotel_1,
+                rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),
+                price = 1600000.0,
+                rentPeriod = HuniRentPeriod.Day
+            ),
         )
     }
 
