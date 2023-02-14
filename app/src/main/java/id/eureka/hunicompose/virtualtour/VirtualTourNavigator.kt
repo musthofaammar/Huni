@@ -28,7 +28,6 @@ import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSnapperApi::class, ExperimentalGlideComposeApi::class)
 @Composable
@@ -75,19 +74,21 @@ fun VirtualTourNavigator(
         LazyRow(
             state = lazyListState,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
-            flingBehavior = rememberSnapperFlingBehavior(lazyListState = lazyListState,
-                snapOffsetForItem = SnapOffsets.Start),
+            flingBehavior = rememberSnapperFlingBehavior(
+                lazyListState = lazyListState,
+                snapOffsetForItem = SnapOffsets.Start
+            ),
             modifier = Modifier.padding(PaddingValues(start = 18.dp, end = 18.dp, bottom = 18.dp))
         ) {
-            itemsIndexed(items) { index, item ->
+            itemsIndexed(items, key = { _, item -> item.id }) { index, item ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
-                    border = if (index == currentIndex) BorderStroke(1.dp,
-                        colorResource(id = R.color.deep_sapphire)) else null,
+                    border = if (index == currentIndex) BorderStroke(
+                        1.dp,
+                        colorResource(id = R.color.deep_sapphire)
+                    ) else null,
                     modifier = Modifier.clickable {
-                        scope.launch {
-                            viewModel.setIndex(index)
-                        }
+                        viewModel.setIndex(index)
                     }
                 ) {
                     GlideImage(
@@ -95,7 +96,8 @@ fun VirtualTourNavigator(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .width(52.dp)
-                            .height(52.dp))
+                            .height(52.dp)
+                    )
 
                 }
             }

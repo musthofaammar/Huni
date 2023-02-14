@@ -20,9 +20,19 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file('D:\\Important\\eureka_signing_key.jks')
+            storePassword 'musthofa2912'
+            keyAlias 'Ammar Musthofa'
+            keyPassword 'musthofa2912'
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

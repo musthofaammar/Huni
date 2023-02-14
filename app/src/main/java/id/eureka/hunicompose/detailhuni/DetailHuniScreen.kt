@@ -1,13 +1,12 @@
 package id.eureka.hunicompose.detailhuni
 
+import android.content.Intent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,17 +36,19 @@ import id.eureka.hunicompose.core.util.GradientButton
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
 import id.eureka.hunicompose.home.HuniRentPeriod
+import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
 fun DetailHuniScreen(
     modifier: Modifier = Modifier,
+    onBack: () -> Unit
 ) {
     Box(modifier = modifier) {
         LazyColumn {
             item {
-                HeaderDetailHuni()
+                HeaderDetailHuni(onBack = onBack)
             }
 
             item {
@@ -77,13 +79,6 @@ fun HuniBottomInfo(
     period: HuniRentPeriod,
     modifier: Modifier = Modifier,
 ) {
-//    var isShowBottomInfo by remember {
-//        mutableStateOf(true)
-//    }
-//
-//    AnimatedVisibility(visible = isShowBottomInfo) {
-//
-//    }
 
     Surface(
         elevation = 4.dp,
@@ -133,9 +128,11 @@ fun HuniBottomInfo(
 @Composable
 fun HuniDetailInfoTab() {
     val scope = rememberCoroutineScope()
-    val tabs = listOf("Details", "Maps", "Reviews")
+    val tabs = remember {
+        listOf("Details", "Maps", "Reviews")
+    }
+
     val tabPagerState = rememberPagerState()
-//    var selectedTabIndex by remember { mutableStateOf(0) }
 
     val density = LocalDensity.current
     val tabWidths = remember {
@@ -186,11 +183,12 @@ fun HuniDetailInfoTab() {
         }
     }
 
-    HorizontalPager(count = tabs.size,
+    HorizontalPager(
+        count = tabs.size,
         state = tabPagerState,
-        contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)) { page ->
+        contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)
+    ) { page ->
         when (page) {
-//            0 -> ReviewsTab(reviewCount = 5)
             0 -> DetailHuniTab(
                 facilities = Utils.dummyFacilities(),
                 description = "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn"
@@ -210,6 +208,8 @@ fun HuniGeneralInfo(
     star: Double,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -278,7 +278,9 @@ fun HuniGeneralInfo(
 
             Button(
                 shape = RoundedCornerShape(8.dp),
-                onClick = {}
+                onClick = {
+                    context.startActivity(Intent(context, VirtualTourActivity::class.java))
+                }
             ) {
                 Text(
                     text = "Virtual Tour",
@@ -383,13 +385,15 @@ fun HuniGeneralInfo(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HeaderDetailHuni(modifier: Modifier = Modifier) {
+fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
 
-    val images = listOf(
-        R.drawable.hotel_1,
-        R.drawable.hotel_3,
-        R.drawable.hotel_4
-    )
+    val images = remember {
+        listOf(
+            R.drawable.hotel_1,
+            R.drawable.hotel_3,
+            R.drawable.hotel_5
+        )
+    }
 
     val pagerState = rememberPagerState()
 
@@ -412,7 +416,7 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier) {
         }
 
         IconButton(
-            onClick = {},
+            onClick = onBack,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 24.dp, start = 12.dp)
@@ -489,7 +493,7 @@ fun Indicator(modifier: Modifier = Modifier, isSelected: Boolean) {
 @Composable
 fun DetailHuniScreenPreview() {
     HuniComposeTheme {
-        DetailHuniScreen()
+        DetailHuniScreen(onBack = {})
     }
 }
 
