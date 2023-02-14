@@ -9,9 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -26,6 +29,7 @@ import id.eureka.hunicompose.home.HomeScreen
 import id.eureka.hunicompose.onboarding.OnBoardingScreen
 import id.eureka.hunicompose.splash.SplashScreen
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HuniApp(
     modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()
@@ -44,7 +48,11 @@ fun HuniApp(
         NavHost(
             navController = navController,
             startDestination = Screen.Splash.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .semantics {
+                    testTagsAsResourceId = true
+                }
         ) {
             composable(Screen.Splash.route) {
                 SplashScreen(goToNextScreen = {

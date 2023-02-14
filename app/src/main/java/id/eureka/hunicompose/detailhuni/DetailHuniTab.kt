@@ -51,22 +51,6 @@ fun DetailHuniTab(
                     )
                 }
             }
-//            LazyVerticalGrid(
-//                contentPadding = PaddingValues(horizontal = 24.dp),
-//                verticalArrangement = Arrangement.spacedBy(8.dp),
-//                horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                columns = GridCells.Adaptive(92.dp),
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                items(facilities) { item ->
-//                    FacilityItem(
-//                        count = item.count,
-//                        type = item.type,
-//                        icon = item.icon,
-//                        iconImage = item.iconImage
-//                    )
-//                }
-//            }
         }
 
         SectionWithTitle(title = "Description") {
