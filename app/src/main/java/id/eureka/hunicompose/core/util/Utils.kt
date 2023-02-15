@@ -75,7 +75,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Day
             ),
             Huni(
-                name = "Hotel Autumn Center",
+                name = "Hotel Autumn Center 5",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_1,
                 rate = df.format(Random.nextDouble(1.0, 5.0)).toDouble(),

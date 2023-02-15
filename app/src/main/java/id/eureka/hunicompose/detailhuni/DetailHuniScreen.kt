@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -280,7 +281,8 @@ fun HuniGeneralInfo(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
                     context.startActivity(Intent(context, VirtualTourActivity::class.java))
-                }
+                },
+                modifier = Modifier.testTag("virtual_tour_button")
             ) {
                 Text(
                     text = "Virtual Tour",

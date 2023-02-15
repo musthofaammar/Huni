@@ -1,9 +1,11 @@
 package id.eureka.benchmark
 
+import android.bluetooth.BluetoothClass.Device
 import androidx.benchmark.macro.*
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
@@ -46,15 +48,38 @@ class ExampleStartupBenchmark {
     ) {
         pressHome()
         startActivityAndWait()
-        getStartedToHome()
+        allScreen()
     }
 }
 
-fun MacrobenchmarkScope.getStartedToHome() {
+fun MacrobenchmarkScope.allScreen() {
 
     device.wait(Until.hasObject(By.text("Get Started")), 2000)
 
     device.findObject(By.res("button_get_started"))?.click()
 
-    device.waitForIdle()
+    device.wait(Until.hasObject(By.res("nearby_list")), 2000)
+
+    device.findObject(By.res("nearby_list")).apply {
+        setGestureMargin(device.displayWidth / 5)
+        repeat(4){
+            swipe(Direction.LEFT, 1f)
+            device.waitForIdle()
+        }
+    }
+
+    device.wait(Until.hasObject(By.text("Hotel Autumn Center 5")), 5000)
+
+    device.findObject(By.text("Hotel Autumn Center 5"))?.click()
+
+    device.wait(Until.hasObject(By.text("Griya Asri Cempaka Raya")), 5000)
+
+    device.findObject(By.res("virtual_tour_button"))?.click()
+
+    device.wait(Until.hasObject(By.res("virtual_room_list")), 5000)
+
+    device.findObject(By.res("virtual_room_list"))?.apply {
+        setGestureMargin(device.displayWidth / 5)
+        swipe(Direction.LEFT, 1f)
+    }
 }

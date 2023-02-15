@@ -231,6 +231,7 @@ fun HuniNearbyLocations(
                 lazyListState = lazyListState,
                 snapOffsetForItem = SnapOffsets.Start
             ),
+            modifier = Modifier.testTag("nearby_list")
         ) {
             items(Utils.dummyHuniItem()) { item ->
                 HuniItemShort(
