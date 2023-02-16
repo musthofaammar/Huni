@@ -1,6 +1,5 @@
 package id.eureka.benchmark
 
-import android.bluetooth.BluetoothClass.Device
 import androidx.benchmark.macro.*
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -28,10 +27,10 @@ class ExampleStartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
-    @Test
-    fun startup() = benchmarkRule.measureRepeated(
+    private fun startup(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = "id.eureka.hunicompose",
         metrics = listOf(StartupTimingMetric()),
+        compilationMode = compilationMode,
         iterations = 5,
         startupMode = StartupMode.COLD
     ) {
@@ -39,41 +38,66 @@ class ExampleStartupBenchmark {
         startActivityAndWait()
     }
 
-    @Test
-    fun goToHome() = benchmarkRule.measureRepeated(
+    private fun allScreen(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = "id.eureka.hunicompose",
         metrics = listOf(FrameTimingMetric()),
         iterations = 5,
+        compilationMode = compilationMode,
         startupMode = StartupMode.COLD
     ) {
-        pressHome()
-        startActivityAndWait()
-        allScreen()
+        getStartedHome()
+        scrollAndGoToDetail()
+        goToVirtualTourAndScroll()
     }
+
+//    @Test
+//    fun startupCompilationNone() = startup(CompilationMode.None())
+//
+//    @Test
+//    fun startupCompilationPartial() = startup(CompilationMode.Partial())
+//
+//    @Test
+//    fun startupCompilationFull() = startup(CompilationMode.Full())
+
+    @Test
+    fun allScreenCompilationNone() = allScreen(CompilationMode.None())
+
+    @Test
+    fun allScreenCompilationPartial() = allScreen(CompilationMode.Partial())
+
+    @Test
+    fun allScreenCompilationFull() = allScreen(CompilationMode.Full())
 }
 
-fun MacrobenchmarkScope.allScreen() {
+fun MacrobenchmarkScope.getStartedHome() {
+    pressHome()
+    startActivityAndWait()
 
     device.wait(Until.hasObject(By.text("Get Started")), 2000)
 
     device.findObject(By.res("button_get_started"))?.click()
+}
 
+fun MacrobenchmarkScope.scrollAndGoToDetail() {
     device.wait(Until.hasObject(By.res("nearby_list")), 2000)
 
-    device.findObject(By.res("nearby_list")).apply {
-        setGestureMargin(device.displayWidth / 5)
-        repeat(4){
-            swipe(Direction.LEFT, 1f)
+    device.waitForIdle()
+
+    repeat(4) {
+        device.findObject(By.res("nearby_list")).also {
+            it.setGestureMargin(device.displayWidth / 5)
+            it.swipe(Direction.LEFT, 1f)
             device.waitForIdle()
         }
     }
 
     device.wait(Until.hasObject(By.text("Hotel Autumn Center 5")), 5000)
 
-    device.findObject(By.text("Hotel Autumn Center 5"))?.click()
-
+    device.findObject(By.text("Hotel Autumn Center 5")).click()
     device.wait(Until.hasObject(By.text("Griya Asri Cempaka Raya")), 5000)
+}
 
+fun MacrobenchmarkScope.goToVirtualTourAndScroll() {
     device.findObject(By.res("virtual_tour_button"))?.click()
 
     device.wait(Until.hasObject(By.res("virtual_room_list")), 5000)
@@ -81,5 +105,6 @@ fun MacrobenchmarkScope.allScreen() {
     device.findObject(By.res("virtual_room_list"))?.apply {
         setGestureMargin(device.displayWidth / 5)
         swipe(Direction.LEFT, 1f)
+        device.waitForIdle()
     }
 }

@@ -102,5 +102,5 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
-    implementation "androidx.profileinstaller:profileinstaller:1.2.2"
+    implementation "androidx.profileinstaller:profileinstaller:1.3.0-beta01"
 }
