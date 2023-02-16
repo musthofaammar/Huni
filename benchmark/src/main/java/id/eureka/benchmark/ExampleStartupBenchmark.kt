@@ -50,23 +50,20 @@ class ExampleStartupBenchmark {
         goToVirtualTourAndScroll()
     }
 
-//    @Test
-//    fun startupCompilationNone() = startup(CompilationMode.None())
-//
-//    @Test
-//    fun startupCompilationPartial() = startup(CompilationMode.Partial())
-//
-//    @Test
-//    fun startupCompilationFull() = startup(CompilationMode.Full())
+    @Test
+    fun startupCompilationNone() = startup(CompilationMode.None())
+
+    @Test
+    fun startupCompilationPartial() = startup(CompilationMode.Partial())
+
+    @Test
+    fun startupCompilationFull() = startup(CompilationMode.Full())
 
     @Test
     fun allScreenCompilationNone() = allScreen(CompilationMode.None())
 
     @Test
     fun allScreenCompilationPartial() = allScreen(CompilationMode.Partial())
-
-    @Test
-    fun allScreenCompilationFull() = allScreen(CompilationMode.Full())
 }
 
 fun MacrobenchmarkScope.getStartedHome() {
@@ -79,21 +76,18 @@ fun MacrobenchmarkScope.getStartedHome() {
 }
 
 fun MacrobenchmarkScope.scrollAndGoToDetail() {
-    device.wait(Until.hasObject(By.res("nearby_list")), 2000)
+    device.wait(Until.hasObject(By.res("content_list")), 2000)
 
     device.waitForIdle()
 
-    repeat(4) {
-        device.findObject(By.res("nearby_list")).also {
-            it.setGestureMargin(device.displayWidth / 5)
-            it.swipe(Direction.LEFT, 1f)
-            device.waitForIdle()
-        }
+    device.findObject(By.res("content_list")).also {
+        it.setGestureMargin(device.displayHeight / 5)
+        it.fling(Direction.DOWN)
     }
 
     device.wait(Until.hasObject(By.text("Hotel Autumn Center 5")), 5000)
 
-    device.findObject(By.text("Hotel Autumn Center 5")).click()
+    device.findObject(By.text("Hotel Autumn Center 5"))?.click()
     device.wait(Until.hasObject(By.text("Griya Asri Cempaka Raya")), 5000)
 }
 

@@ -49,7 +49,7 @@ fun HomeScreen(
     onItemClick: () -> Unit
 ) {
 
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier.testTag("content_list")) {
 
         item {
             HomeHeader(userName = "Naufintya", location = "Bali, Indonesia")

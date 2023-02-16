@@ -49,7 +49,6 @@ fun VirtualTourNavigator(
             .padding(24.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(colorResource(id = R.color.white_25))
-            .testTag("virtual_room_list")
     ) {
 
         Spacer(modifier = Modifier.height(18.dp))
@@ -79,7 +78,9 @@ fun VirtualTourNavigator(
                 lazyListState = lazyListState,
                 snapOffsetForItem = SnapOffsets.Start
             ),
-            modifier = Modifier.padding(PaddingValues(start = 18.dp, end = 18.dp, bottom = 18.dp))
+            modifier = Modifier
+                .padding(PaddingValues(start = 18.dp, end = 18.dp, bottom = 18.dp))
+                .testTag("virtual_room_list")
         ) {
             itemsIndexed(items, key = { _, item -> item.id }) { index, item ->
                 Card(
