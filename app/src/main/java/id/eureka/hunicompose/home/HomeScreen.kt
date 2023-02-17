@@ -14,11 +14,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
@@ -42,12 +40,16 @@ import id.eureka.hunicompose.core.util.HuniCategory
 import id.eureka.hunicompose.core.util.SearchBar
 import id.eureka.hunicompose.core.util.SectionWithTitleAndSeeAll
 import id.eureka.hunicompose.core.util.Utils
+import id.eureka.hunicompose.home.model.Huni
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    viewModel: HomeViewModel = viewModel()
 ) {
+
+    val huniItems by viewModel.huniItems.collectAsState()
 
     LazyColumn(modifier = modifier.testTag("content_list")) {
 
@@ -72,11 +74,15 @@ fun HomeScreen(
         }
 
         item {
-            HuniNearbyLocations(onItemClick = onItemClick)
+            HuniNearbyLocations(onItemClick = onItemClick, items = huniItems)
         }
 
         item {
-            HuniPopular(modifier = Modifier.padding(top = 32.dp), onItemClick = onItemClick)
+            HuniPopular(
+                modifier = Modifier.padding(top = 32.dp),
+                onItemClick = onItemClick,
+                huniItems
+            )
         }
     }
 }
@@ -214,7 +220,8 @@ fun HuniCategories(
 @Composable
 fun HuniNearbyLocations(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    items: List<Huni>
 ) {
 
     val lazyListState = rememberLazyListState()
@@ -233,7 +240,7 @@ fun HuniNearbyLocations(
             ),
             modifier = Modifier.testTag("nearby_list")
         ) {
-            items(Utils.dummyHuniItem()) { item ->
+            items(items) { item ->
                 HuniItemShort(
                     name = item.name,
                     address = item.address,
@@ -251,7 +258,8 @@ fun HuniNearbyLocations(
 @Composable
 fun HuniPopular(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    items: List<Huni>
 ) {
     SectionWithTitleAndSeeAll(
         title = "Popular",
@@ -263,7 +271,7 @@ fun HuniPopular(
                 .padding(horizontal = 24.dp)
                 .animateContentSize()
         ) {
-            Utils.dummyHuniItem().forEach { item ->
+            items.forEach { item ->
                 HuniItemLong(
                     name = item.name,
                     address = item.address,
@@ -308,7 +316,7 @@ fun HuniCategoriesPreview() {
 @Composable
 fun HuniNearbyLocationsPreview() {
     HuniComposeTheme {
-        HuniNearbyLocations(onItemClick = {})
+        HuniNearbyLocations(onItemClick = {}, items = Utils.dummyHuniItem())
     }
 }
 
@@ -316,6 +324,6 @@ fun HuniNearbyLocationsPreview() {
 @Composable
 fun HuniPopularPreview() {
     HuniComposeTheme {
-        HuniPopular(onItemClick = {})
+        HuniPopular(onItemClick = {}, items = Utils.dummyHuniItem())
     }
 }
