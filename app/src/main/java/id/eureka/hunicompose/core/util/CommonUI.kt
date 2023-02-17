@@ -340,7 +340,7 @@ fun ExpandableText(
         fontSize = 12.sp,
         color = colorResource(
             id = R.color.deep_sapphire)),
-    showLessText: String = "Read Less",
+    showLessText: String = "\nRead Less",
     showLessStyle: SpanStyle = SpanStyle(fontFamily = KanitFont,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
@@ -351,7 +351,7 @@ fun ExpandableText(
     var isExpanded by remember { mutableStateOf(false) }
     var isClickable by remember { mutableStateOf(false) }
     var lastCharIndex by remember { mutableStateOf(0) }
-    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) Int.MAX_VALUE else maxLine)
+    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) 10 else maxLine)
 
     Box(
         modifier = modifier
@@ -365,8 +365,7 @@ fun ExpandableText(
                 } else {
                     val adjustText =
                         text.substring(startIndex = 0, endIndex = lastCharIndex)
-                            .dropLast(showMoreText.length)
-                            .dropLastWhile { Character.isWhitespace(it) || it == '.' }
+                            .dropLast(showMoreText.length + 1)
                     append(adjustText)
                     withStyle(style = showMoreStyle) { append(showMoreText) }
                 }
@@ -374,6 +373,7 @@ fun ExpandableText(
                 append(text)
             }
         }
+
 
         Text(
             text = annotatedText,
