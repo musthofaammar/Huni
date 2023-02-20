@@ -12,9 +12,11 @@ import kotlin.random.Random
 class ReviewViewModel : ViewModel() {
 
     //TODO save list review
-    private val _reviews: MutableStateFlow<List<Review>> = MutableStateFlow(listOf())
+    private val _reviews: MutableStateFlow<Map<Int, List<Review>>> = MutableStateFlow(mapOf())
+    val reviews = _reviews.asStateFlow()
 
-    private val _filteredReviews: MutableStateFlow<List<Review>> = MutableStateFlow(listOf())
+    private val _filteredReviews: MutableStateFlow<List<Review>> =
+        MutableStateFlow(listOf())
     val filteredReviews = _filteredReviews.asStateFlow()
 
     //TODO save selected rate
@@ -41,7 +43,8 @@ class ReviewViewModel : ViewModel() {
                 reviews.add(review)
             }
 
-            _reviews.value = reviews
+            val groupedReviews = reviews.groupBy { it.rate }
+            _reviews.value = groupedReviews
             _filteredReviews.value = reviews
         }
     }
@@ -58,6 +61,8 @@ class ReviewViewModel : ViewModel() {
     private fun filterReviews() {
         val position = _selectedRate.value
         _filteredReviews.value =
-            if (position != 0) _reviews.value.filter { it.rate == (5 - _selectedRate.value) } else _reviews.value
+            if (position != 0)
+                _reviews.value[6 - position].orEmpty()
+            else _reviews.value.values.toList().flatten().shuffled()
     }
 }

@@ -1,5 +1,7 @@
 package id.eureka.hunicompose.detailhuni
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
-import kotlin.random.Random
 
 @Composable
 fun ReviewsTab(
@@ -33,11 +35,16 @@ fun ReviewsTab(
 ) {
 
     val filterReviewSelected by viewModel.selectedRate.collectAsState()
-    val reviews by viewModel.filteredReviews.collectAsState()
+    val filteredReviews by viewModel.filteredReviews.collectAsState()
+    val reviews by viewModel.reviews.collectAsState()
+
+    val allReviewsSize = remember(reviews) {
+        reviews.values.toList().flatten().size
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
+        modifier = modifier.fillMaxHeight()
     ) {
         LazyRow(
             contentPadding = PaddingValues(horizontal = 24.dp),
@@ -45,11 +52,13 @@ fun ReviewsTab(
         ) {
             items(6, key = { it }) { position ->
                 FilterReviewItem(
+
                     isShowAll = position == 0,
                     isShowAllText = "All Reviews",
                     rate = 5 - position,
                     isSelected = filterReviewSelected == position,
-                    reviewCount = Random.nextInt(1, 100),
+                    reviewCount = if (position != 0) reviews[6 - position]?.size
+                        ?: 0 else allReviewsSize,
                     onFilterReviewClick = {
                         viewModel.setSelectedRate(position)
                     }
@@ -57,11 +66,11 @@ fun ReviewsTab(
             }
         }
 
-        for (i in reviews.indices) {
+        for (i in filteredReviews.indices) {
             ReviewItem(
-                name = reviews[i].name,
-                rate = reviews[i].rate,
-                description = reviews[i].description,
+                name = filteredReviews[i].name,
+                rate = filteredReviews[i].rate,
+                description = filteredReviews[i].description,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
         }
@@ -78,10 +87,21 @@ fun FilterReviewItem(
     reviewCount: Int,
     onFilterReviewClick: () -> Unit
 ) {
+
+    val color = colorResource(id = R.color.deep_sapphire)
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) color else Color.White,
+        animationSpec = tween(500)
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else color,
+        animationSpec = tween(500)
+    )
+
     Card(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, color = colorResource(id = R.color.deep_sapphire)),
-        backgroundColor = if (isSelected) colorResource(id = R.color.deep_sapphire) else Color.White,
+        backgroundColor = backgroundColor,
         modifier = modifier
     ) {
         Row(
@@ -96,7 +116,7 @@ fun FilterReviewItem(
                 Text(
                     text = isShowAllText,
                     style = MaterialTheme.typography.h3,
-                    color = if (isSelected) Color.White else colorResource(id = R.color.deep_sapphire),
+                    color = textColor,
                     fontSize = 12.sp
                 )
             else
