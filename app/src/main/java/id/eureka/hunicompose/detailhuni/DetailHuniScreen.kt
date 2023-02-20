@@ -39,7 +39,6 @@ import id.eureka.hunicompose.core.util.customTabIndicatorOffset
 import id.eureka.hunicompose.home.HuniRentPeriod
 import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @Composable
 fun DetailHuniScreen(
@@ -196,7 +195,7 @@ fun HuniDetailInfoTab() {
             )
 
             1 -> MapTab()
-            2 -> ReviewsTab(reviewCount = Random.nextInt(5, 10))
+            2 -> ReviewsTab()
         }
     }
 }

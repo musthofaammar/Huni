@@ -12,10 +12,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,20 +21,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
-import java.util.*
 import kotlin.random.Random
 
 @Composable
 fun ReviewsTab(
-    reviewCount: Int,
     modifier: Modifier = Modifier,
+    viewModel: ReviewViewModel = viewModel()
 ) {
 
-    var filterReviewSelected by rememberSaveable {
-        mutableStateOf(0)
-    }
+    val filterReviewSelected by viewModel.selectedRate.collectAsState()
+    val reviews by viewModel.filteredReviews.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -46,7 +43,7 @@ fun ReviewsTab(
             contentPadding = PaddingValues(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(6) { position ->
+            items(6, key = { it }) { position ->
                 FilterReviewItem(
                     isShowAll = position == 0,
                     isShowAllText = "All Reviews",
@@ -54,17 +51,17 @@ fun ReviewsTab(
                     isSelected = filterReviewSelected == position,
                     reviewCount = Random.nextInt(1, 100),
                     onFilterReviewClick = {
-                        filterReviewSelected = position
+                        viewModel.setSelectedRate(position)
                     }
                 )
             }
         }
 
-        for (i in 0 until reviewCount) {
+        for (i in reviews.indices) {
             ReviewItem(
-                name = UUID.randomUUID().toString(),
-                rate = Random.nextInt(1, 5),
-                description = UUID.randomUUID().toString(),
+                name = reviews[i].name,
+                rate = reviews[i].rate,
+                description = reviews[i].description,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
         }
@@ -182,9 +179,7 @@ fun ReviewItem(
 @Composable
 fun ReviewsTabPreview() {
     HuniComposeTheme {
-        ReviewsTab(
-            reviewCount = Random.nextInt(3, 5)
-        )
+        ReviewsTab()
     }
 }
 
