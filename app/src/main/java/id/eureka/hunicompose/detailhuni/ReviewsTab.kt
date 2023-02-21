@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
+import id.eureka.hunicompose.core.util.ExpandableText
 
 @Composable
 fun ReviewsTab(
@@ -184,13 +185,13 @@ fun ReviewItem(
                 }
             }
 
-//            ExpandableText(
-//                text = description,
-//                textStyle = MaterialTheme.typography.h4.copy(
-//                    fontSize = 10.sp,
-//                    color = colorResource(id = R.color.onyx)
-//                )
-//            )
+            ExpandableText(
+                text = description,
+                textStyle = MaterialTheme.typography.h4.copy(
+                    fontSize = 10.sp,
+                    color = colorResource(id = R.color.onyx)
+                )
+            )
         }
     }
 }
