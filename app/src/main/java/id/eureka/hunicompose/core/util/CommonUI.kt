@@ -226,8 +226,7 @@ fun SearchBar(
 @Composable
 fun SectionWithTitleAndSeeAll(
     title: String,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -257,8 +256,6 @@ fun SectionWithTitleAndSeeAll(
                 )
             )
         }
-
-        content()
     }
 }
 

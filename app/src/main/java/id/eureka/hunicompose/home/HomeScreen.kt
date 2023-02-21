@@ -2,14 +2,10 @@
 
 package id.eureka.hunicompose.home
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -36,10 +32,7 @@ import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.theme.KanitFont
-import id.eureka.hunicompose.core.util.HuniCategory
-import id.eureka.hunicompose.core.util.SearchBar
-import id.eureka.hunicompose.core.util.SectionWithTitleAndSeeAll
-import id.eureka.hunicompose.core.util.Utils
+import id.eureka.hunicompose.core.util.*
 import id.eureka.hunicompose.home.model.Huni
 
 @Composable
@@ -77,13 +70,11 @@ fun HomeScreen(
             HuniNearbyLocations(onItemClick = onItemClick, items = huniItems)
         }
 
-        item {
-            HuniPopular(
-                modifier = Modifier.padding(top = 32.dp),
-                onItemClick = onItemClick,
-                huniItems
-            )
-        }
+        HuniPopular(
+            modifier = Modifier.padding(top = 32.dp),
+            onItemClick = onItemClick,
+            huniItems
+        )
     }
 }
 
@@ -226,10 +217,12 @@ fun HuniNearbyLocations(
 
     val lazyListState = rememberLazyListState()
 
-    SectionWithTitleAndSeeAll(
-        title = "Nearby Your Location",
-        modifier = modifier
-    ) {
+    Column {
+        SectionWithTitleAndSeeAll(
+            title = "Nearby Your Location",
+            modifier = modifier
+        )
+
         LazyRow(
             state = lazyListState,
             contentPadding = PaddingValues(horizontal = 24.dp),
@@ -255,36 +248,31 @@ fun HuniNearbyLocations(
     }
 }
 
-@Composable
-fun HuniPopular(
+fun LazyListScope.HuniPopular(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
     items: List<Huni>
 ) {
-    SectionWithTitleAndSeeAll(
-        title = "Popular",
-        modifier = modifier
-    ) {
+    item {
+        SectionWithTitleAndSeeAll(
+            title = "Popular",
+            modifier = modifier
+        )
+    }
 
-        Column(
+    items(items) { item ->
+
+        HuniItemLong(
+            name = item.name,
+            address = item.address,
+            star = item.rate,
+            price = item.price,
+            period = item.rentPeriod,
+            image = painterResource(id = item.image),
             modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .animateContentSize()
-        ) {
-            items.forEach { item ->
-                HuniItemLong(
-                    name = item.name,
-                    address = item.address,
-                    star = item.rate,
-                    price = item.price,
-                    period = item.rentPeriod,
-                    image = painterResource(id = item.image),
-                    modifier = Modifier
-                        .clickable(onClick = onItemClick)
-                        .padding(bottom = 12.dp)
-                )
-            }
-        }
+                .clickable(onClick = onItemClick)
+                .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
+        )
     }
 }
 
@@ -317,13 +305,5 @@ fun HuniCategoriesPreview() {
 fun HuniNearbyLocationsPreview() {
     HuniComposeTheme {
         HuniNearbyLocations(onItemClick = {}, items = Utils.dummyHuniItem())
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HuniPopularPreview() {
-    HuniComposeTheme {
-        HuniPopular(onItemClick = {}, items = Utils.dummyHuniItem())
     }
 }
