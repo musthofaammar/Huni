@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.home.model.HomeUIState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,13 +20,15 @@ class HomeViewModel : ViewModel() {
 
     fun getHuniNearby() {
         viewModelScope.launch {
-            setLoading(_nearbyUIState)
-            delay(5000)
-            _nearbyUIState.emit(
-                HomeUIState.HuniNearbyLoaded(
-                    Utils.dummyHuniItem()
+            launch(Dispatchers.IO) {
+                setLoading(_nearbyUIState)
+                delay(5000)
+                _nearbyUIState.emit(
+                    HomeUIState.HuniNearbyLoaded(
+                        Utils.dummyHuniItem()
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -35,13 +38,15 @@ class HomeViewModel : ViewModel() {
 
     fun getHuniPopular() {
         viewModelScope.launch {
-            setLoading(_popularUIState)
-            delay(5000)
-            _popularUIState.emit(
-                HomeUIState.HuniPopularLoaded(
-                    Utils.dummyHuniItem()
+            launch(Dispatchers.IO) {
+                setLoading(_popularUIState)
+                delay(5000)
+                _popularUIState.emit(
+                    HomeUIState.HuniPopularLoaded(
+                        Utils.dummyHuniItem()
+                    )
                 )
-            )
+            }
         }
     }
 }

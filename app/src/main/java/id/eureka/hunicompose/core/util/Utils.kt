@@ -27,6 +27,7 @@ object Utils {
 
         return listOf(
             Huni(
+                1,
                 name = "Griya Asri Cempaka Raya",
                 address = "Jl. Tukad Balian, Renon, No.78",
                 image = R.drawable.hotel_1,
@@ -35,6 +36,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Month
             ),
             Huni(
+                2,
                 name = "Hotel Autumn Center",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_2,
@@ -43,6 +45,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Day
             ),
             Huni(
+                3,
                 name = "Hotel Autumn Center",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_1,
@@ -51,6 +54,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Day
             ),
             Huni(
+                4,
                 name = "Hotel Autumn Center",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_2,
@@ -59,6 +63,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Day
             ),
             Huni(
+                5,
                 name = "Hotel Autumn Center",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_1,
@@ -67,6 +72,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Day
             ),
             Huni(
+                6,
                 name = "Hotel Autumn Center",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_2,
@@ -75,6 +81,7 @@ object Utils {
                 rentPeriod = HuniRentPeriod.Day
             ),
             Huni(
+                7,
                 name = "Hotel Autumn Center 5",
                 address = "Jl. Bedahulu X No.29",
                 image = R.drawable.hotel_1,

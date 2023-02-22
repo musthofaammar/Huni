@@ -207,7 +207,7 @@ fun HuniCategories(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
     ) {
-        items(categories) { item ->
+        items(categories, key = { it.title }) { item ->
             HuniCategory(
                 title = item.title,
                 titleColor = colorResource(id = R.color.deep_sapphire),
@@ -246,7 +246,7 @@ fun HuniNearbyLocations(
         ) {
             when (screenState) {
                 is HomeUIState.HuniNearbyLoaded -> {
-                    items(screenState.data) { item ->
+                    items(screenState.data, key = { it.id }) { item ->
                         HuniItemShort(
                             name = item.name,
                             address = item.address,
@@ -261,7 +261,7 @@ fun HuniNearbyLocations(
                     }
                 }
                 is HomeUIState.Loading -> {
-                    items(4) {
+                    items(4, key = { it }) {
                         HuniItemShortLoading()
                     }
                 }
@@ -286,8 +286,7 @@ fun LazyListScope.HuniPopular(
 
     when (screenState) {
         is HomeUIState.HuniPopularLoaded -> {
-            items(screenState.data) { item ->
-
+            items(screenState.data, key = { it.id }) { item ->
                 HuniItemLong(
                     name = item.name,
                     address = item.address,
