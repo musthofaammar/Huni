@@ -33,6 +33,7 @@ import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.theme.KanitFont
 import id.eureka.hunicompose.core.util.*
+import id.eureka.hunicompose.home.model.HomeUIState
 import id.eureka.hunicompose.home.model.Huni
 
 @Composable
@@ -41,10 +42,14 @@ fun HomeScreen(
     onItemClick: () -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
-
-    val huniItems by viewModel.huniItems.collectAsState()
+    val screenState by viewModel.homeUIState.collectAsState()
 
     LazyColumn(modifier = modifier.testTag("content_list")) {
+
+        if (screenState is HomeUIState.Init) {
+            viewModel.getHuniPopular()
+            viewModel.getHuniNearby()
+        }
 
         item {
             HomeHeader(userName = "Naufintya", location = "Bali, Indonesia")
@@ -67,13 +72,13 @@ fun HomeScreen(
         }
 
         item {
-            HuniNearbyLocations(onItemClick = onItemClick, items = huniItems)
+            HuniNearbyLocations(onItemClick = onItemClick, screenState = screenState)
         }
 
         HuniPopular(
             modifier = Modifier.padding(top = 32.dp),
             onItemClick = onItemClick,
-            huniItems
+            screenState
         )
     }
 }
@@ -212,10 +217,13 @@ fun HuniCategories(
 fun HuniNearbyLocations(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
-    items: List<Huni>
+    screenState: HomeUIState
 ) {
 
     val lazyListState = rememberLazyListState()
+    val huniList = remember {
+        mutableListOf<Huni>()
+    }
 
     Column {
         SectionWithTitleAndSeeAll(
@@ -233,7 +241,14 @@ fun HuniNearbyLocations(
             ),
             modifier = Modifier.testTag("nearby_list")
         ) {
-            items(items) { item ->
+            when (screenState) {
+                is HomeUIState.HuniNearbyLoaded -> {
+                    huniList.addAll(screenState.data)
+                }
+                else -> Unit
+            }
+
+            items(huniList) { item ->
                 HuniItemShort(
                     name = item.name,
                     address = item.address,
@@ -251,8 +266,9 @@ fun HuniNearbyLocations(
 fun LazyListScope.HuniPopular(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
-    items: List<Huni>
+    screenState: HomeUIState
 ) {
+
     item {
         SectionWithTitleAndSeeAll(
             title = "Popular",
@@ -260,19 +276,24 @@ fun LazyListScope.HuniPopular(
         )
     }
 
-    items(items) { item ->
+    when (screenState) {
+        is HomeUIState.HuniPopularLoaded -> {
+            items(screenState.data) { item ->
 
-        HuniItemLong(
-            name = item.name,
-            address = item.address,
-            star = item.rate,
-            price = item.price,
-            period = item.rentPeriod,
-            image = painterResource(id = item.image),
-            modifier = Modifier
-                .clickable(onClick = onItemClick)
-                .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
-        )
+                HuniItemLong(
+                    name = item.name,
+                    address = item.address,
+                    star = item.rate,
+                    price = item.price,
+                    period = item.rentPeriod,
+                    image = painterResource(id = item.image),
+                    modifier = Modifier
+                        .clickable(onClick = onItemClick)
+                        .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
+                )
+            }
+        }
+        else -> Unit
     }
 }
 
@@ -304,6 +325,6 @@ fun HuniCategoriesPreview() {
 @Composable
 fun HuniNearbyLocationsPreview() {
     HuniComposeTheme {
-        HuniNearbyLocations(onItemClick = {}, items = Utils.dummyHuniItem())
+//        HuniNearbyLocations(onItemClick = {}, items = Utils.dummyHuniItem())
     }
 }
