@@ -1,6 +1,7 @@
 package id.eureka.hunicompose.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -21,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.valentinilk.shimmer.shimmer
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.Utils
@@ -133,6 +136,103 @@ fun HuniItemShort(
 }
 
 @Composable
+fun HuniItemShortLoading(
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier
+            .width(180.dp)
+            .shimmer(),
+        shape = RoundedCornerShape(12.dp),
+        elevation = 10.dp
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .height(106.dp)
+                    .width(180.dp)
+                    .background(colorResource(id = R.color.storm_dust))
+            )
+
+            Column(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .background(colorResource(id = R.color.storm_dust))
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 2.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.onyx),
+                            modifier = Modifier
+                                .size(12.dp)
+                        )
+
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .background(colorResource(id = R.color.storm_dust))
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.dark_yellow),
+                            modifier = Modifier
+                                .size(14.dp)
+                                .padding(end = 2.dp)
+                        )
+
+                        Box(modifier = Modifier
+                            .width(8.dp)
+                            .height(16.dp)
+                            .background(colorResource(id = R.color.storm_dust))
+                        )
+                    }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .background(colorResource(id = R.color.storm_dust))
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.BookmarkBorder,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.deep_sapphire),
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun HuniItemLong(
     name: String,
     address: String,
@@ -140,7 +240,7 @@ fun HuniItemLong(
     price: Double,
     period: HuniRentPeriod,
     image: Painter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.height(72.dp),
@@ -239,6 +339,109 @@ fun HuniItemLong(
     }
 }
 
+@Composable
+fun HuniItemLongLoading(
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier
+            .height(72.dp)
+            .shimmer(),
+        shape = RoundedCornerShape(12.dp),
+        elevation = 4.dp
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(72.dp)
+                    .background(colorResource(id = R.color.storm_dust))
+            )
+
+            Column(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .background(colorResource(id = R.color.storm_dust))
+                )
+
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .background(colorResource(id = R.color.storm_dust))
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 2.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.onyx),
+                            modifier = Modifier
+                                .size(12.dp)
+                        )
+
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                            .background(colorResource(id = R.color.storm_dust))
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.dark_yellow),
+                            modifier = Modifier
+                                .size(14.dp)
+                                .padding(end = 2.dp)
+                        )
+
+                        Box(modifier = Modifier
+                            .width(8.dp)
+                            .height(16.dp)
+                            .background(colorResource(id = R.color.storm_dust))
+                        )
+                    }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .background(colorResource(id = R.color.storm_dust))
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.BookmarkBorder,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.deep_sapphire),
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun HuniItemShortPreview() {
@@ -266,6 +469,14 @@ fun HuniItemLongPreview() {
             image = painterResource(id = R.drawable.hotel_1),
             period = HuniRentPeriod.Month
         )
+    }
+}
+
+@Preview
+@Composable
+fun HuniItemLongLoadingPreview() {
+    HuniComposeTheme {
+        HuniItemLongLoading()
     }
 }
 

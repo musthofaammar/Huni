@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,14 +33,15 @@ import id.eureka.hunicompose.splash.SplashScreen
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HuniApp(
-    modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()
+    modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(),
 ) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val listNoBottomBar =
+    val listNoBottomBar = remember {
         listOf(Screen.DetailHuni.route, Screen.Splash.route, Screen.OnBoarding.route)
+    }
 
     Scaffold(
         bottomBar = { if (currentRoute !in listNoBottomBar) BottomBar(navController) },

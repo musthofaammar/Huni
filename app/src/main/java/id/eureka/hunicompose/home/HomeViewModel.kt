@@ -11,14 +11,17 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private val _homeUIState: MutableStateFlow<HomeUIState> = MutableStateFlow(HomeUIState.Init)
-    val homeUIState = _homeUIState.asStateFlow()
+    private val _nearbyUIState: MutableStateFlow<HomeUIState> = MutableStateFlow(HomeUIState.Init)
+    val nearbyUIState = _nearbyUIState.asStateFlow()
+
+    private val _popularUIState: MutableStateFlow<HomeUIState> = MutableStateFlow(HomeUIState.Init)
+    val popularUIState = _popularUIState.asStateFlow()
 
     fun getHuniNearby() {
         viewModelScope.launch {
-            setLoading()
+            setLoading(_nearbyUIState)
             delay(5000)
-            _homeUIState.emit(
+            _nearbyUIState.emit(
                 HomeUIState.HuniNearbyLoaded(
                     Utils.dummyHuniItem()
                 )
@@ -26,15 +29,15 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    private suspend fun setLoading() {
-        _homeUIState.emit(HomeUIState.Loading)
+    private suspend fun setLoading(state: MutableStateFlow<HomeUIState>) {
+        state.emit(HomeUIState.Loading)
     }
 
     fun getHuniPopular() {
         viewModelScope.launch {
-            setLoading()
-            delay(100)
-            _homeUIState.emit(
+            setLoading(_popularUIState)
+            delay(5000)
+            _popularUIState.emit(
                 HomeUIState.HuniPopularLoaded(
                     Utils.dummyHuniItem()
                 )

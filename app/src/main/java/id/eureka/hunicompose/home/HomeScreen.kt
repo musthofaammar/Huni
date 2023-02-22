@@ -1,7 +1,9 @@
-@file:OptIn(ExperimentalSnapperApi::class)
+@file:OptIn(ExperimentalSnapperApi::class, ExperimentalFoundationApi::class)
 
 package id.eureka.hunicompose.home
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -40,15 +42,19 @@ import id.eureka.hunicompose.home.model.Huni
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
 ) {
-    val screenState by viewModel.homeUIState.collectAsState()
+    val nearbyState by viewModel.nearbyUIState.collectAsState()
+    val popularState by viewModel.popularUIState.collectAsState()
 
     LazyColumn(modifier = modifier.testTag("content_list")) {
 
-        if (screenState is HomeUIState.Init) {
-            viewModel.getHuniPopular()
+        if (nearbyState is HomeUIState.Init) {
             viewModel.getHuniNearby()
+        }
+
+        if (popularState is HomeUIState.Init) {
+            viewModel.getHuniPopular()
         }
 
         item {
@@ -72,13 +78,13 @@ fun HomeScreen(
         }
 
         item {
-            HuniNearbyLocations(onItemClick = onItemClick, screenState = screenState)
+            HuniNearbyLocations(onItemClick = onItemClick, screenState = nearbyState)
         }
 
         HuniPopular(
             modifier = Modifier.padding(top = 32.dp),
             onItemClick = onItemClick,
-            screenState
+            popularState
         )
     }
 }
@@ -217,13 +223,10 @@ fun HuniCategories(
 fun HuniNearbyLocations(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
-    screenState: HomeUIState
+    screenState: HomeUIState,
 ) {
 
     val lazyListState = rememberLazyListState()
-    val huniList = remember {
-        mutableListOf<Huni>()
-    }
 
     Column {
         SectionWithTitleAndSeeAll(
@@ -243,21 +246,26 @@ fun HuniNearbyLocations(
         ) {
             when (screenState) {
                 is HomeUIState.HuniNearbyLoaded -> {
-                    huniList.addAll(screenState.data)
+                    items(screenState.data) { item ->
+                        HuniItemShort(
+                            name = item.name,
+                            address = item.address,
+                            star = item.rate,
+                            price = item.price,
+                            period = item.rentPeriod,
+                            image = painterResource(id = item.image),
+                            modifier = Modifier
+                                .clickable(onClick = onItemClick)
+                                .animateItemPlacement()
+                        )
+                    }
+                }
+                is HomeUIState.Loading -> {
+                    items(4) {
+                        HuniItemShortLoading()
+                    }
                 }
                 else -> Unit
-            }
-
-            items(huniList) { item ->
-                HuniItemShort(
-                    name = item.name,
-                    address = item.address,
-                    star = item.rate,
-                    price = item.price,
-                    period = item.rentPeriod,
-                    image = painterResource(id = item.image),
-                    modifier = Modifier.clickable(onClick = onItemClick)
-                )
             }
         }
     }
@@ -266,7 +274,7 @@ fun HuniNearbyLocations(
 fun LazyListScope.HuniPopular(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
-    screenState: HomeUIState
+    screenState: HomeUIState,
 ) {
 
     item {
@@ -288,8 +296,18 @@ fun LazyListScope.HuniPopular(
                     period = item.rentPeriod,
                     image = painterResource(id = item.image),
                     modifier = Modifier
-                        .clickable(onClick = onItemClick)
                         .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
+                        .clickable(onClick = onItemClick)
+                        .animateItemPlacement()
+                )
+            }
+        }
+        is HomeUIState.Loading -> {
+            items(4) {
+                HuniItemLongLoading(modifier = Modifier
+                    .padding(bottom = 12.dp,
+                        start = 24.dp,
+                        end = 24.dp)
                 )
             }
         }
