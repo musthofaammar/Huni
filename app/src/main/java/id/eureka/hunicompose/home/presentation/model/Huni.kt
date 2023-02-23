@@ -1,6 +1,8 @@
-package id.eureka.hunicompose.home.model
+package id.eureka.hunicompose.home.presentation.model
 
-import id.eureka.hunicompose.home.HuniRentPeriod
+import id.eureka.hunicompose.home.presentation.HuniRentPeriod
+
+//TODO create mapper
 
 data class Huni(
     val id: Int,

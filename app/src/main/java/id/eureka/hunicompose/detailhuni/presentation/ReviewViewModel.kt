@@ -1,8 +1,8 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import id.eureka.hunicompose.detailhuni.model.Review
+import id.eureka.hunicompose.detailhuni.data.model.Review
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

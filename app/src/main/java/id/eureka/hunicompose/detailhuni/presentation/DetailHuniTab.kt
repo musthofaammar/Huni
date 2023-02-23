@@ -1,9 +1,6 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -15,14 +12,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.flowlayout.FlowColumn
 import com.google.accompanist.flowlayout.FlowRow
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.ExpandableText
 import id.eureka.hunicompose.core.util.SectionWithTitle
 import id.eureka.hunicompose.core.util.Utils
-import id.eureka.hunicompose.detailhuni.model.Facilities
+import id.eureka.hunicompose.detailhuni.data.model.Facilities
 
 @Composable
 fun DetailHuniTab(

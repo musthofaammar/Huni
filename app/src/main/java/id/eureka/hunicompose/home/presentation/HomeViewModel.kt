@@ -1,9 +1,9 @@
-package id.eureka.hunicompose.home
+package id.eureka.hunicompose.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import id.eureka.hunicompose.core.util.Utils
-import id.eureka.hunicompose.home.model.HomeUIState
+import id.eureka.hunicompose.home.presentation.model.HomeUIState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

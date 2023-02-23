@@ -6,9 +6,9 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SportsGymnastics
 import androidx.compose.material.icons.filled.Wifi
 import id.eureka.hunicompose.R
-import id.eureka.hunicompose.detailhuni.model.Facilities
-import id.eureka.hunicompose.home.HuniRentPeriod
-import id.eureka.hunicompose.home.model.Huni
+import id.eureka.hunicompose.detailhuni.data.model.Facilities
+import id.eureka.hunicompose.home.presentation.HuniRentPeriod
+import id.eureka.hunicompose.home.presentation.model.Huni
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.random.Random

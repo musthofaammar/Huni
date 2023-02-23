@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -13,10 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,8 +36,10 @@ fun ReviewsTab(
     val filteredReviews by viewModel.filteredReviews.collectAsState()
     val reviews by viewModel.reviews.collectAsState()
 
-    val allReviewsSize = remember(reviews) {
-        reviews.values.toList().flatten().size
+    val allReviewsSize by remember {
+        derivedStateOf {
+            reviews.values.toList().flatten().size
+        }
     }
 
     Column(

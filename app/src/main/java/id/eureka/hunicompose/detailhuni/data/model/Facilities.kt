@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.detailhuni.model
+package id.eureka.hunicompose.detailhuni.data.model
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

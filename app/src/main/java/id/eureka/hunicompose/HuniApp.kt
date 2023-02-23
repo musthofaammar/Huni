@@ -25,8 +25,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import id.eureka.hunicompose.core.routes.NavigationItem
 import id.eureka.hunicompose.core.routes.Screen
-import id.eureka.hunicompose.detailhuni.DetailHuniScreen
-import id.eureka.hunicompose.home.HomeScreen
+import id.eureka.hunicompose.detailhuni.presentation.DetailHuniScreen
+import id.eureka.hunicompose.home.presentation.HomeScreen
 import id.eureka.hunicompose.onboarding.OnBoardingScreen
 import id.eureka.hunicompose.splash.SplashScreen
 

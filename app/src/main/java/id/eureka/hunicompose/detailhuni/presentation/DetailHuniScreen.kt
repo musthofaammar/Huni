@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
 import android.content.Intent
 import androidx.compose.animation.core.animateDpAsState
@@ -36,7 +36,7 @@ import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.GradientButton
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
-import id.eureka.hunicompose.home.HuniRentPeriod
+import id.eureka.hunicompose.home.presentation.HuniRentPeriod
 import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
 
@@ -135,7 +135,7 @@ fun HuniDetailInfoTab() {
     val tabPagerState = rememberPagerState()
 
     val density = LocalDensity.current
-    val tabWidths = remember {
+    val tabWidths = remember(tabs) {
         val tabWidthStateList = mutableStateListOf<Dp>()
         repeat(tabs.size) {
             tabWidthStateList.add(0.dp)
@@ -157,7 +157,7 @@ fun HuniDetailInfoTab() {
             )
         },
     ) {
-        tabs.forEachIndexed { tabIndex, s ->
+        tabs.forEachIndexed { tabIndex, tabTitle ->
             Tab(
                 selected = tabIndex == tabPagerState.currentPage,
                 onClick = {
@@ -167,7 +167,7 @@ fun HuniDetailInfoTab() {
                 },
                 text = {
                     Text(
-                        text = s,
+                        text = tabTitle,
                         style = MaterialTheme.typography.h3,
                         fontSize = 18.sp,
                         color = if (tabPagerState.currentPage == tabIndex) colorResource(

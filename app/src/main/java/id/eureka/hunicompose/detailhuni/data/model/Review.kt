@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.detailhuni.model
+package id.eureka.hunicompose.detailhuni.data.model
 
 data class Review(
     val name: String,

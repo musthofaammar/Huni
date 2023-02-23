@@ -1,8 +1,7 @@
 @file:OptIn(ExperimentalSnapperApi::class, ExperimentalFoundationApi::class)
 
-package id.eureka.hunicompose.home
+package id.eureka.hunicompose.home.presentation
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,8 +34,7 @@ import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.theme.KanitFont
 import id.eureka.hunicompose.core.util.*
-import id.eureka.hunicompose.home.model.HomeUIState
-import id.eureka.hunicompose.home.model.Huni
+import id.eureka.hunicompose.home.presentation.model.HomeUIState
 
 @Composable
 fun HomeScreen(

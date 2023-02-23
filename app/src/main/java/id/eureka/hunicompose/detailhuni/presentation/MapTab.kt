@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable

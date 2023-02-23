@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.home.model
+package id.eureka.hunicompose.home.presentation.model
 
 sealed interface HomeUIState {
 
