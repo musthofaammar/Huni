@@ -251,7 +251,7 @@ fun HuniNearbyLocations(
                             star = item.rate,
                             price = item.price,
                             period = item.rentPeriod,
-                            image = painterResource(id = item.image),
+                            image = painterResource(id = item.images.first()),
                             modifier = Modifier
                                 .clickable(onClick = onItemClick)
                                 .animateItemPlacement()
@@ -291,7 +291,7 @@ fun LazyListScope.HuniPopular(
                     star = item.rate,
                     price = item.price,
                     period = item.rentPeriod,
-                    image = painterResource(id = item.image),
+                    image = painterResource(id = item.images.first()),
                     modifier = Modifier
                         .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
                         .clickable(onClick = onItemClick)

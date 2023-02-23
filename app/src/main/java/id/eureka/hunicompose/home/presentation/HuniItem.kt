@@ -450,7 +450,7 @@ fun HuniItemShortPreview() {
             address = "Jl. Tukad Balian, Renon, No. 78",
             star = 4.7,
             price = 24000000.0,
-            image = painterResource(id = R.drawable.hotel_1),
+            image = painterResource(id = R.drawable.property_1),
             period = HuniRentPeriod.Month
         )
     }
@@ -465,7 +465,7 @@ fun HuniItemLongPreview() {
             address = "Jl. Tukad Balian, Renon, No. 78",
             star = 4.7,
             price = 24000000.0,
-            image = painterResource(id = R.drawable.hotel_1),
+            image = painterResource(id = R.drawable.property_1),
             period = HuniRentPeriod.Month
         )
     }

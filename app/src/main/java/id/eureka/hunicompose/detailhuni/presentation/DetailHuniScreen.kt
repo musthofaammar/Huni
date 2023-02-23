@@ -56,7 +56,7 @@ fun DetailHuniScreen(
                     name = "Griya Asri Cempaka Raya",
                     address = "Jl. Tukad Balian, Renon, No. 78",
                     ownerName = "Ahmad Lee",
-                    star = 4.7
+                    rate = 4.7
                 )
             }
 
@@ -205,7 +205,7 @@ fun HuniGeneralInfo(
     name: String,
     address: String,
     ownerName: String,
-    star: Double,
+    rate: Double,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -242,7 +242,7 @@ fun HuniGeneralInfo(
                 )
 
                 Text(
-                    text = "$star",
+                    text = "$rate",
                     style = MaterialTheme.typography.h4,
                     color = colorResource(id = R.color.silver_chalice),
                     fontSize = 16.sp
@@ -390,9 +390,9 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
 
     val images = remember {
         listOf(
-            R.drawable.hotel_1,
-            R.drawable.hotel_3,
-            R.drawable.hotel_5
+            R.drawable.property_1,
+            R.drawable.property_10,
+            R.drawable.property_11
         )
     }
 
@@ -506,7 +506,7 @@ fun HuniGeneralInfo() {
             name = "Griya Asri Cempaka Raya",
             address = "Jl. Tukad Balian, Renon, No. 78",
             ownerName = "Ahmad Lee",
-            star = 4.7
+            rate = 4.7
         )
     }
 }
