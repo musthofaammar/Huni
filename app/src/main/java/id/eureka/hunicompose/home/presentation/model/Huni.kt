@@ -1,8 +1,10 @@
 package id.eureka.hunicompose.home.presentation.model
 
+import android.os.Parcelable
 import id.eureka.hunicompose.detailhuni.data.model.Facilities
 import id.eureka.hunicompose.detailhuni.data.model.Review
 import id.eureka.hunicompose.home.presentation.HuniRentPeriod
+import kotlinx.parcelize.Parcelize
 
 //TODO create mapper
 
