@@ -31,6 +31,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.ramcosta.composedestinations.annotation.Destination
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.GradientButton
@@ -40,6 +41,7 @@ import id.eureka.hunicompose.home.presentation.HuniRentPeriod
 import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
 
+@Destination
 @Composable
 fun DetailHuniScreen(
     modifier: Modifier = Modifier,

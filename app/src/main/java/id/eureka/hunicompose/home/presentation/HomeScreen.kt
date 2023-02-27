@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
@@ -39,11 +40,12 @@ import id.eureka.hunicompose.core.util.SectionWithTitleAndSeeAll
 import id.eureka.hunicompose.core.util.Utils.stringToPeriod
 import id.eureka.hunicompose.home.presentation.model.HomeUIState
 
+@Destination
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
+    onItemClick: () -> Unit,
 ) {
     val nearbyState by viewModel.nearbyUIState.collectAsState()
     val popularState by viewModel.popularUIState.collectAsState()

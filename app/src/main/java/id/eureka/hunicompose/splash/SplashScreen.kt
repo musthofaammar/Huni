@@ -14,19 +14,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import id.eureka.hunicompose.R
+import id.eureka.hunicompose.core.routes.Screen
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
+import id.eureka.hunicompose.destinations.OnBoardingScreenDestination
 import kotlinx.coroutines.delay
 
+@Destination(start = true)
 @Composable
 fun SplashScreen(
-    modifier: Modifier = Modifier,
-    goToNextScreen: () -> Unit
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier
 ) {
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(true) {
         delay(1000)
-        goToNextScreen()
+        navigator.navigate(OnBoardingScreenDestination) {
+            popUpTo(Screen.Splash.route) {
+                inclusive = true
+            }
+        }
     }
 
     Box(
@@ -49,6 +58,6 @@ fun SplashScreen(
 @Composable
 fun SplashScreenPreview() {
     HuniComposeTheme {
-        SplashScreen(goToNextScreen = {})
+//        SplashScreen()
     }
 }
