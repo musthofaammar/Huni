@@ -156,10 +156,11 @@ fun HuniItemShortLoading(
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(16.dp)
-                    .background(colorResource(id = R.color.storm_dust))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .background(colorResource(id = R.color.storm_dust))
                 )
 
                 Row(
@@ -180,10 +181,11 @@ fun HuniItemShortLoading(
                                 .size(12.dp)
                         )
 
-                        Box(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .background(colorResource(id = R.color.storm_dust))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .background(colorResource(id = R.color.storm_dust))
                         )
                     }
 
@@ -199,10 +201,11 @@ fun HuniItemShortLoading(
                                 .padding(end = 2.dp)
                         )
 
-                        Box(modifier = Modifier
-                            .width(8.dp)
-                            .height(16.dp)
-                            .background(colorResource(id = R.color.storm_dust))
+                        Box(
+                            modifier = Modifier
+                                .width(8.dp)
+                                .height(16.dp)
+                                .background(colorResource(id = R.color.storm_dust))
                         )
                     }
                 }
@@ -214,10 +217,11 @@ fun HuniItemShortLoading(
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 ) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp)
-                        .background(colorResource(id = R.color.storm_dust))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                            .background(colorResource(id = R.color.storm_dust))
                     )
                     Icon(
                         imageVector = Icons.Outlined.BookmarkBorder,
@@ -360,16 +364,18 @@ fun HuniItemLongLoading(
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(16.dp)
-                    .background(colorResource(id = R.color.storm_dust))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .background(colorResource(id = R.color.storm_dust))
                 )
 
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(16.dp)
-                    .background(colorResource(id = R.color.storm_dust))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .background(colorResource(id = R.color.storm_dust))
                 )
 
                 Row(
@@ -390,10 +396,11 @@ fun HuniItemLongLoading(
                                 .size(12.dp)
                         )
 
-                        Box(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(16.dp)
-                            .background(colorResource(id = R.color.storm_dust))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(16.dp)
+                                .background(colorResource(id = R.color.storm_dust))
                         )
                     }
 
@@ -409,10 +416,11 @@ fun HuniItemLongLoading(
                                 .padding(end = 2.dp)
                         )
 
-                        Box(modifier = Modifier
-                            .width(8.dp)
-                            .height(16.dp)
-                            .background(colorResource(id = R.color.storm_dust))
+                        Box(
+                            modifier = Modifier
+                                .width(8.dp)
+                                .height(16.dp)
+                                .background(colorResource(id = R.color.storm_dust))
                         )
                     }
                 }
@@ -424,10 +432,11 @@ fun HuniItemLongLoading(
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 ) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp)
-                        .background(colorResource(id = R.color.storm_dust))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                            .background(colorResource(id = R.color.storm_dust))
                     )
                     Icon(
                         imageVector = Icons.Outlined.BookmarkBorder,
@@ -484,4 +493,6 @@ sealed class HuniRentPeriod(val period: String) {
     object SixMonths : HuniRentPeriod("six months")
     object Month : HuniRentPeriod("month")
     object Day : HuniRentPeriod("day")
+
+
 }

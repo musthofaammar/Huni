@@ -33,7 +33,10 @@ import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.theme.KanitFont
-import id.eureka.hunicompose.core.util.*
+import id.eureka.hunicompose.core.util.HuniCategory
+import id.eureka.hunicompose.core.util.SearchBar
+import id.eureka.hunicompose.core.util.SectionWithTitleAndSeeAll
+import id.eureka.hunicompose.core.util.Utils.stringToPeriod
 import id.eureka.hunicompose.home.presentation.model.HomeUIState
 
 @Composable
@@ -250,7 +253,7 @@ fun HuniNearbyLocations(
                             address = item.address,
                             star = item.rate,
                             price = item.price,
-                            period = item.rentPeriod,
+                            period = stringToPeriod(item.rentPeriod),
                             image = painterResource(id = item.images.first()),
                             modifier = Modifier
                                 .clickable(onClick = onItemClick)
@@ -290,7 +293,7 @@ fun LazyListScope.HuniPopular(
                     address = item.address,
                     star = item.rate,
                     price = item.price,
-                    period = item.rentPeriod,
+                    period = stringToPeriod(item.rentPeriod),
                     image = painterResource(id = item.images.first()),
                     modifier = Modifier
                         .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
@@ -301,10 +304,13 @@ fun LazyListScope.HuniPopular(
         }
         is HomeUIState.Loading -> {
             items(4) {
-                HuniItemLongLoading(modifier = Modifier
-                    .padding(bottom = 12.dp,
-                        start = 24.dp,
-                        end = 24.dp)
+                HuniItemLongLoading(
+                    modifier = Modifier
+                        .padding(
+                            bottom = 12.dp,
+                            start = 24.dp,
+                            end = 24.dp
+                        )
                 )
             }
         }

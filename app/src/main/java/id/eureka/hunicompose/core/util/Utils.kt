@@ -176,12 +176,21 @@ object Utils {
         "Newgate"
     ).random()
 
-    private fun randomPeriod(): HuniRentPeriod {
+    private fun randomPeriod(): String {
 
         return when (Random.nextInt(1, 4)) {
-            1 -> HuniRentPeriod.Month
-            2 -> HuniRentPeriod.Year
-            3 -> HuniRentPeriod.SixMonths
+            1 -> HuniRentPeriod.Month.period
+            2 -> HuniRentPeriod.Year.period
+            3 -> HuniRentPeriod.SixMonths.period
+            else -> HuniRentPeriod.Day.period
+        }
+    }
+
+    fun stringToPeriod(periodString: String): HuniRentPeriod {
+        return when (periodString) {
+            "year" -> HuniRentPeriod.Year
+            "six months" -> HuniRentPeriod.SixMonths
+            "month" -> HuniRentPeriod.Month
             else -> HuniRentPeriod.Day
         }
     }
