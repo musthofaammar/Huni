@@ -14,7 +14,7 @@ class DetailHuniViewModel(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val huni: StateFlow<Huni?> = savedStateHandle.getStateFlow("huni", null)
+    val huni: StateFlow<Huni?> = savedStateHandle.getStateFlow("huni", null)
 
     private val _filteredReviews: MutableStateFlow<Map<Int, List<Review>>> =
         MutableStateFlow(mapOf())

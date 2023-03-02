@@ -27,17 +27,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.GradientButton
 import id.eureka.hunicompose.core.util.Utils
+import id.eureka.hunicompose.core.util.Utils.stringToPeriod
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
+import id.eureka.hunicompose.detailhuni.data.model.Facilities
+import id.eureka.hunicompose.detailhuni.data.model.Review
 import id.eureka.hunicompose.home.presentation.HuniRentPeriod
+import id.eureka.hunicompose.home.presentation.model.Huni
 import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
 
@@ -45,31 +51,38 @@ import kotlinx.coroutines.launch
 @Composable
 fun DetailHuniScreen(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit
+    viewModel: DetailHuniViewModel = viewModel(),
+    navigator: DestinationsNavigator,
+    huni: Huni
 ) {
+
+    LaunchedEffect(true) {
+        viewModel.setHuniDetail(huni)
+    }
+
     Box(modifier = modifier) {
         LazyColumn {
             item {
-                HeaderDetailHuni(onBack = onBack)
+                HeaderDetailHuni(onBack = { navigator.navigateUp() }, viewModel = viewModel)
             }
 
             item {
                 HuniGeneralInfo(
-                    name = "Griya Asri Cempaka Raya",
-                    address = "Jl. Tukad Balian, Renon, No. 78",
-                    ownerName = "Ahmad Lee",
-                    rate = 4.7
+                    name = huni.name,
+                    address = huni.address,
+                    ownerName = huni.ownerName,
+                    rate = huni.rate
                 )
             }
 
             item {
-                HuniDetailInfoTab()
+                HuniDetailInfoTab(huni.facilities, huni.reviews, huni.description)
             }
         }
 
         HuniBottomInfo(
-            price = 24000000.0,
-            period = HuniRentPeriod.Month,
+            price = huni.price,
+            period = stringToPeriod(huni.rentPeriod),
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
@@ -128,7 +141,11 @@ fun HuniBottomInfo(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HuniDetailInfoTab() {
+fun HuniDetailInfoTab(
+    facilities: List<Facilities>,
+    reviews: List<Review>,
+    description: String,
+) {
     val scope = rememberCoroutineScope()
     val tabs = remember {
         listOf("Details", "Maps", "Reviews")
@@ -192,8 +209,8 @@ fun HuniDetailInfoTab() {
     ) { page ->
         when (page) {
             0 -> DetailHuniTab(
-                facilities = Utils.dummyFacilities(),
-                description = "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn"
+                facilities = facilities,
+                description = description
             )
 
             1 -> MapTab()
@@ -388,15 +405,13 @@ fun HuniGeneralInfo(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
+fun HeaderDetailHuni(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    viewModel: DetailHuniViewModel
+) {
 
-    val images = remember {
-        listOf(
-            R.drawable.property_1,
-            R.drawable.property_10,
-            R.drawable.property_11
-        )
-    }
+    val huni by viewModel.huni.collectAsState()
 
     val pagerState = rememberPagerState()
 
@@ -405,11 +420,11 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
     ) {
 
         HorizontalPager(
-            count = images.size,
+            count = huni?.images?.size ?: 0,
             state = pagerState
         ) { page ->
             Image(
-                painter = painterResource(id = images[page]),
+                painter = painterResource(id = huni?.images?.get(page) ?: 0),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -449,7 +464,7 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
         }
 
         ImageIndicator(
-            itemCount = images.size,
+            itemCount = huni?.images?.size ?: 0,
             pagerState = pagerState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -496,7 +511,7 @@ fun Indicator(modifier: Modifier = Modifier, isSelected: Boolean) {
 @Composable
 fun DetailHuniScreenPreview() {
     HuniComposeTheme {
-        DetailHuniScreen(onBack = {})
+//        DetailHuniScreen(onBack = {})
     }
 }
 

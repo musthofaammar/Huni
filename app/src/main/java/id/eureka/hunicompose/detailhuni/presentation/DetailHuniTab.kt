@@ -6,9 +6,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -16,6 +14,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.ExpandableText
+import id.eureka.hunicompose.core.util.IconResource
 import id.eureka.hunicompose.core.util.SectionWithTitle
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.detailhuni.data.model.Facilities
@@ -41,9 +40,7 @@ fun DetailHuniTab(
                 for (item in facilities) {
                     FacilityItem(
                         count = item.count,
-                        type = item.type,
-                        icon = item.icon,
-                        iconImage = item.iconImage
+                        type = item.type
                     )
                 }
             }
@@ -62,8 +59,6 @@ fun DetailHuniTab(
 @Composable
 fun FacilityItem(
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
-    iconImage: Int? = null,
     count: Int,
     type: String,
 ) {
@@ -71,21 +66,12 @@ fun FacilityItem(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
-        if (icon != null)
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = colorResource(id = R.color.silver_chalice),
-                modifier = Modifier.size(16.dp)
-            )
-
-        if (iconImage != null)
-            Icon(
-                painter = painterResource(id = iconImage),
-                contentDescription = null,
-                tint = colorResource(id = R.color.silver_chalice),
-                modifier = Modifier.size(16.dp)
-            )
+        Icon(
+            imageVector = IconResource.getResource(type),
+            contentDescription = null,
+            tint = colorResource(id = R.color.silver_chalice),
+            modifier = Modifier.size(16.dp)
+        )
 
         Text(
             text = if (count > 1) "$count $type" else type,
@@ -111,6 +97,6 @@ fun DetailInfoPreview() {
 @Composable
 fun FacilityItemPreview() {
     HuniComposeTheme {
-        FacilityItem(iconImage = R.drawable.bed, count = 5, type = "Bedrooms")
+        FacilityItem(count = 5, type = "Bedrooms")
     }
 }

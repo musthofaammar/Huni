@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
@@ -38,6 +39,7 @@ import id.eureka.hunicompose.core.util.HuniCategory
 import id.eureka.hunicompose.core.util.SearchBar
 import id.eureka.hunicompose.core.util.SectionWithTitleAndSeeAll
 import id.eureka.hunicompose.core.util.Utils.stringToPeriod
+import id.eureka.hunicompose.destinations.DetailHuniScreenDestination
 import id.eureka.hunicompose.home.presentation.model.HomeUIState
 
 @Destination
@@ -45,7 +47,7 @@ import id.eureka.hunicompose.home.presentation.model.HomeUIState
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
-    onItemClick: () -> Unit,
+    navigator: DestinationsNavigator
 ) {
     val nearbyState by viewModel.nearbyUIState.collectAsState()
     val popularState by viewModel.popularUIState.collectAsState()
@@ -81,12 +83,12 @@ fun HomeScreen(
         }
 
         item {
-            HuniNearbyLocations(onItemClick = onItemClick, screenState = nearbyState)
+            HuniNearbyLocations(navigator = navigator, screenState = nearbyState)
         }
 
         HuniPopular(
             modifier = Modifier.padding(top = 32.dp),
-            onItemClick = onItemClick,
+            navigator = navigator,
             popularState
         )
     }
@@ -225,7 +227,7 @@ fun HuniCategories(
 @Composable
 fun HuniNearbyLocations(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit,
+    navigator: DestinationsNavigator,
     screenState: HomeUIState,
 ) {
 
@@ -258,7 +260,13 @@ fun HuniNearbyLocations(
                             period = stringToPeriod(item.rentPeriod),
                             image = painterResource(id = item.images.first()),
                             modifier = Modifier
-                                .clickable(onClick = onItemClick)
+                                .clickable(onClick = {
+                                    navigator.navigate(
+                                        DetailHuniScreenDestination(
+                                            huni = item
+                                        )
+                                    )
+                                })
                                 .animateItemPlacement()
                         )
                     }
@@ -276,7 +284,7 @@ fun HuniNearbyLocations(
 
 fun LazyListScope.HuniPopular(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit,
+    navigator: DestinationsNavigator,
     screenState: HomeUIState,
 ) {
 
@@ -299,7 +307,13 @@ fun LazyListScope.HuniPopular(
                     image = painterResource(id = item.images.first()),
                     modifier = Modifier
                         .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
-                        .clickable(onClick = onItemClick)
+                        .clickable(onClick = {
+                            navigator.navigate(
+                                DetailHuniScreenDestination(
+                                    huni = item
+                                )
+                            )
+                        })
                         .animateItemPlacement()
                 )
             }
@@ -324,7 +338,7 @@ fun LazyListScope.HuniPopular(
 @Composable
 fun HomeScreenPreview() {
     HuniComposeTheme {
-        HomeScreen(onItemClick = {})
+//        HomeScreen()
     }
 }
 

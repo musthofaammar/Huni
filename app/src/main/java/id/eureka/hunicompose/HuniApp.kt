@@ -20,20 +20,19 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import id.eureka.hunicompose.core.routes.NavigationItem
 import id.eureka.hunicompose.core.routes.Screen
 import id.eureka.hunicompose.destinations.DetailHuniScreenDestination
 import id.eureka.hunicompose.destinations.HomeScreenDestination
 import id.eureka.hunicompose.destinations.OnBoardingScreenDestination
 import id.eureka.hunicompose.destinations.SplashScreenDestination
-import id.eureka.hunicompose.home.presentation.HomeScreen
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HuniApp(
-    modifier: Modifier = Modifier, navController: NavController = rememberNavController(),
+    modifier: Modifier = Modifier
 ) {
+    val navController = rememberNavController()
 
     val currentRoute = navController.appCurrentDestinationAsState().value
         ?: NavGraphs.root.startAppDestination
@@ -47,17 +46,15 @@ fun HuniApp(
         modifier = modifier
     ) { innerPadding ->
 
-        DestinationsNavHost(navGraph = NavGraphs.root, modifier = Modifier
-            .padding(innerPadding)
-            .semantics {
-                testTagsAsResourceId = true
-            }) {
-            composable(HomeScreenDestination) {
-                HomeScreen() {
-                    destinationsNavigator.navigate(DetailHuniScreenDestination())
-                }
-            }
-        }
+        DestinationsNavHost(
+            navController = navController,
+            navGraph = NavGraphs.root,
+            modifier = Modifier
+                .padding(innerPadding)
+                .semantics {
+                    testTagsAsResourceId = true
+                })
+    }
 
 //        NavHost(
 //            navController = navController,
@@ -99,7 +96,6 @@ fun HuniApp(
 //                })
 //            }
 //        }
-    }
 }
 
 

@@ -1,7 +1,5 @@
 package id.eureka.hunicompose.core.util
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.detailhuni.data.model.Facilities
 import id.eureka.hunicompose.detailhuni.data.model.Review
@@ -65,13 +63,13 @@ object Utils {
 
     fun dummyFacilities(): List<Facilities> {
         return listOf(
-            Facilities(icon = Icons.Filled.SportsGymnastics, type = "Gym", count = 1),
-            Facilities(iconImage = R.drawable.bed, type = "Bedrooms", count = 5),
-            Facilities(icon = Icons.Filled.Wifi, type = "Free Wifi", count = 1),
-            Facilities(icon = Icons.Filled.CarRental, type = "Parking Spots", count = 1),
-            Facilities(icon = Icons.Filled.Security, type = "Security", count = 1),
-            Facilities(icon = Icons.Filled.SmokeFree, type = "Smoke Free", count = 1),
-            Facilities(icon = Icons.Filled.Pool, type = "Swimming Pool", count = 1),
+            Facilities(type = "Gym", count = 1),
+            Facilities(type = "Bedrooms", count = 5),
+            Facilities(type = "Free Wifi", count = 1),
+            Facilities(type = "Parking Spots", count = 1),
+            Facilities(type = "Security", count = 1),
+            Facilities(type = "Smoke Free", count = 1),
+            Facilities(type = "Swimming Pool", count = 1),
         )
     }
 
