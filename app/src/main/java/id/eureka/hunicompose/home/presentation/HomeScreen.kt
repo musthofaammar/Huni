@@ -47,7 +47,7 @@ import id.eureka.hunicompose.home.presentation.model.HomeUIState
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
 ) {
     val nearbyState by viewModel.nearbyUIState.collectAsState()
     val popularState by viewModel.popularUIState.collectAsState()
@@ -259,15 +259,14 @@ fun HuniNearbyLocations(
                             price = item.price,
                             period = stringToPeriod(item.rentPeriod),
                             image = painterResource(id = item.images.first()),
-                            modifier = Modifier
-                                .clickable(onClick = {
-                                    navigator.navigate(
-                                        DetailHuniScreenDestination(
-                                            huni = item
-                                        )
+                            onClick = {
+                                navigator.navigate(
+                                    DetailHuniScreenDestination(
+                                        huni = item
                                     )
-                                })
-                                .animateItemPlacement()
+                                )
+                            },
+                            modifier = Modifier.animateItemPlacement()
                         )
                     }
                 }

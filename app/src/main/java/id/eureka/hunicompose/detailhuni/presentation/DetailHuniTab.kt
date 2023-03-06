@@ -1,6 +1,7 @@
 package id.eureka.hunicompose.detailhuni.presentation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +24,7 @@ import id.eureka.hunicompose.detailhuni.data.model.Facilities
 fun DetailHuniTab(
     facilities: List<Facilities>,
     description: String,
+    scrollToEnd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -50,7 +52,8 @@ fun DetailHuniTab(
             ExpandableText(
                 text = description,
                 maxLine = 4,
-                modifier = Modifier.padding(horizontal = 24.dp)
+                modifier = Modifier.padding(horizontal = 24.dp),
+                scrollToEnd = scrollToEnd
             )
         }
     }
@@ -89,6 +92,7 @@ fun DetailInfoPreview() {
         DetailHuniTab(
             Utils.dummyFacilities(),
             "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn",
+            scrollToEnd = {}
         )
     }
 }

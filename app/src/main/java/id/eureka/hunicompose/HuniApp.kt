@@ -20,17 +20,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.navigation.navigate
 import id.eureka.hunicompose.core.routes.NavigationItem
 import id.eureka.hunicompose.core.routes.Screen
-import id.eureka.hunicompose.destinations.DetailHuniScreenDestination
-import id.eureka.hunicompose.destinations.HomeScreenDestination
-import id.eureka.hunicompose.destinations.OnBoardingScreenDestination
-import id.eureka.hunicompose.destinations.SplashScreenDestination
+import id.eureka.hunicompose.destinations.*
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HuniApp(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
 
@@ -113,7 +111,7 @@ fun BottomBar(
 
         val navigationItems = listOf(
             NavigationItem(HomeScreenDestination, Icons.Default.Home, Screen.Home),
-            NavigationItem(HomeScreenDestination, Icons.Default.Chat, Screen.Message),
+            NavigationItem(NestedLazyColumnDestination, Icons.Default.Chat, Screen.Message),
             NavigationItem(HomeScreenDestination, Icons.Default.WorkOutline, Screen.Post),
             NavigationItem(HomeScreenDestination, Icons.Default.Bookmark, Screen.Bookmark),
             NavigationItem(HomeScreenDestination, Icons.Default.Person, Screen.Profile),
@@ -127,7 +125,7 @@ fun BottomBar(
                     tint = colorResource(id = R.color.deep_sapphire)
                 )
             }, selected = currentDestination == item.direction, onClick = {
-                navController.navigate(item.screen.route) {
+                navController.navigate(item.direction) {
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }

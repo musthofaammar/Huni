@@ -3,6 +3,7 @@ package id.eureka.hunicompose.detailhuni.presentation
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,23 +27,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.ExpandableText
+import id.eureka.hunicompose.detailhuni.data.model.Review
 
 @Composable
 fun ReviewsTab(
     modifier: Modifier = Modifier,
-    viewModel: ReviewViewModel = viewModel()
+    reviewCounts: List<Int>,
+    filterReviewSelected: Int,
+    filteredReviews: List<Review>,
+    onFilterReviewClick: (Int) -> Unit,
 ) {
-
-    val filterReviewSelected by viewModel.selectedRate.collectAsState()
-    val filteredReviews by viewModel.filteredReviews.collectAsState()
-    val reviews by viewModel.reviews.collectAsState()
-
-    val allReviewsSize by remember {
-        derivedStateOf {
-            reviews.values.toList().flatten().size
-        }
-    }
-
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier.fillMaxHeight()
@@ -52,27 +47,44 @@ fun ReviewsTab(
         ) {
             items(6, key = { it }) { position ->
                 FilterReviewItem(
-
                     isShowAll = position == 0,
                     isShowAllText = "All Reviews",
                     rate = 5 - position,
                     isSelected = filterReviewSelected == position,
-                    reviewCount = if (position != 0) reviews[6 - position]?.size
-                        ?: 0 else allReviewsSize,
-                    onFilterReviewClick = {
-                        viewModel.setSelectedRate(position)
+                    reviewCount = reviewCounts[position],
+                    modifier = Modifier.clickable {
+                        onFilterReviewClick(position)
                     }
                 )
             }
         }
 
-        for (i in filteredReviews.indices) {
-            ReviewItem(
-                name = filteredReviews[i].name,
-                rate = filteredReviews[i].rate,
-                description = filteredReviews[i].description,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+        if (filteredReviews.isEmpty()) {
+            Box(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(painter = painterResource(id = R.drawable.empty_box),
+                        contentDescription = null)
+
+                    Text(text = "No Data",
+                        style = MaterialTheme.typography.h3,
+                        color = colorResource(id = R.color.deep_sapphire),
+                        fontSize = 16.sp)
+                }
+            }
+        } else {
+            for (i in filteredReviews.indices) {
+                ReviewItem(
+                    name = filteredReviews[i].name,
+                    rate = filteredReviews[i].rate,
+                    description = filteredReviews[i].description,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
         }
     }
 }
@@ -85,7 +97,6 @@ fun FilterReviewItem(
     rate: Int,
     isShowAllText: String = "",
     reviewCount: Int,
-    onFilterReviewClick: () -> Unit
 ) {
 
     val color = colorResource(id = R.color.deep_sapphire)
@@ -110,7 +121,6 @@ fun FilterReviewItem(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .height(24.dp)
-                .clickable { onFilterReviewClick() },
         ) {
             if (isShowAll)
                 Text(
@@ -189,7 +199,8 @@ fun ReviewItem(
                 textStyle = MaterialTheme.typography.h4.copy(
                     fontSize = 10.sp,
                     color = colorResource(id = R.color.onyx)
-                )
+                ),
+                scrollToEnd = {}
             )
         }
     }
@@ -199,7 +210,7 @@ fun ReviewItem(
 @Composable
 fun ReviewsTabPreview() {
     HuniComposeTheme {
-        ReviewsTab()
+//        ReviewsTab()
     }
 }
 
@@ -224,8 +235,7 @@ fun FilterReviewItemWithShowAllPreview() {
             rate = 0,
             isShowAllText = "All Reviews",
             reviewCount = 3,
-            isSelected = true,
-            onFilterReviewClick = {}
+            isSelected = true
         )
     }
 }
@@ -239,8 +249,7 @@ fun FilterReviewItemWithStarPreview() {
             rate = 3,
             isShowAllText = "All Reviews",
             reviewCount = 10,
-            isSelected = false,
-            onFilterReviewClick = {}
+            isSelected = false
         )
     }
 }
