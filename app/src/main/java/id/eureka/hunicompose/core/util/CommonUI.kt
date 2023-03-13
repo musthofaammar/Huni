@@ -84,7 +84,9 @@ fun HuniCategory(
     iconColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    Card(shape = RoundedCornerShape(12.dp), elevation = 10.dp, modifier = modifier) {
+    Card(shape = RoundedCornerShape(12.dp),
+        elevation = 10.dp,
+        modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -217,6 +219,7 @@ fun SearchBar(
                 Icon(
                     painter = painterResource(id = R.drawable.filter),
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier
                         .height(18.dp)
                         .width(16.dp)
@@ -247,7 +250,7 @@ fun SectionWithTitleAndSeeAll(
                 text = title,
                 style = MaterialTheme.typography.h3,
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.onyx)
+                color = MaterialTheme.colors.onPrimary
             )
 
             Text(
@@ -273,7 +276,7 @@ fun SectionWithTitle(
             text = title,
             style = MaterialTheme.typography.h3,
             fontSize = 14.sp,
-            color = colorResource(id = R.color.onyx),
+            color = MaterialTheme.colors.onPrimary,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

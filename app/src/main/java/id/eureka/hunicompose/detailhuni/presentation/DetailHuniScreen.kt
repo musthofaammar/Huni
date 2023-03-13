@@ -5,6 +5,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -297,12 +298,13 @@ fun HuniGeneralInfo(
                 text = name,
                 style = MaterialTheme.typography.h3,
                 fontSize = 18.sp,
-                color = colorResource(id = R.color.onyx),
+                color = MaterialTheme.colors.onPrimary,
                 modifier = Modifier.weight(8.5f)
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
                 modifier = Modifier.weight(1.5f)
             ) {
                 Icon(
@@ -315,7 +317,7 @@ fun HuniGeneralInfo(
                 )
 
                 Text(
-                    text = "$rate",
+                    text = String.format("%.1f", rate),
                     style = MaterialTheme.typography.h4,
                     color = colorResource(id = R.color.silver_chalice),
                     fontSize = 16.sp
@@ -337,7 +339,7 @@ fun HuniGeneralInfo(
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = null,
-                    tint = colorResource(id = R.color.onyx),
+                    tint = MaterialTheme.colors.onPrimary,
                     modifier = Modifier
                         .size(12.dp)
                         .padding(end = 4.dp)
@@ -350,6 +352,8 @@ fun HuniGeneralInfo(
                     fontSize = 12.sp
                 )
             }
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             Button(
                 shape = RoundedCornerShape(8.dp),

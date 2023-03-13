@@ -27,7 +27,6 @@ import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.Utils
 import id.eureka.hunicompose.core.util.shadow
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HuniItemShort(
     name: String,
@@ -67,7 +66,7 @@ fun HuniItemShort(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 12.sp,
-                    color = colorResource(id = R.color.onyx),
+                    color = MaterialTheme.colors.onPrimary,
                 )
 
                 Row(
@@ -84,7 +83,7 @@ fun HuniItemShort(
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
                             contentDescription = null,
-                            tint = colorResource(id = R.color.onyx),
+                            tint = MaterialTheme.colors.onPrimary,
                             modifier = Modifier
                                 .size(12.dp)
                         )
@@ -101,6 +100,7 @@ fun HuniItemShort(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
                         modifier = Modifier.weight(1.7f)
                     ) {
                         Icon(
@@ -263,7 +263,7 @@ fun HuniItemLong(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.height(72.dp),
+        modifier = modifier.height(80.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = 4.dp
     ) {
@@ -274,7 +274,7 @@ fun HuniItemLong(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(80.dp)
-                    .height(72.dp)
+                    .height(80.dp)
             )
 
             Column(
@@ -320,6 +320,7 @@ fun HuniItemLong(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
                         modifier = Modifier.weight(1.5f)
                     ) {
                         Icon(
