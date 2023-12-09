@@ -78,12 +78,14 @@ fun ReviewsTab(
             }
         } else {
             for (i in filteredReviews.indices) {
-                ReviewItem(
-                    name = filteredReviews[i].name,
-                    rate = filteredReviews[i].rate,
-                    description = filteredReviews[i].description,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
+                key(filteredReviews[i].id) {
+                    ReviewItem(
+                        name = filteredReviews[i].name,
+                        rate = filteredReviews[i].rate,
+                        description = filteredReviews[i].description,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                }
             }
         }
     }

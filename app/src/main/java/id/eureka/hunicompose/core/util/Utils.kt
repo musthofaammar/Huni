@@ -75,10 +75,24 @@ object Utils {
 
     private fun dummyReviews(): List<Review> {
         val reviews = mutableListOf<Review>()
+
+        val randomIDs = mutableListOf<Int>()
+
+        var randomId: Int
+
+        randomId = Random.nextInt(1, 99999)
+
+        while (randomId in randomIDs) {
+            randomId = Random.nextInt(1, 99999)
+        }
+
+        randomIDs.add(randomId)
+
         var review: Review
 
         for (i in 0..Random.nextInt(10, 30)) {
             review = Review(
+                id = randomId,
                 name = UUID.randomUUID().toString(),
                 rate = Random.nextInt(1, 5),
                 description = UUID.randomUUID().toString(),

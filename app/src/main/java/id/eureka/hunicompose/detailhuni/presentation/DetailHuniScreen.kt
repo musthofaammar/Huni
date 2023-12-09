@@ -367,7 +367,8 @@ fun HuniGeneralInfo(
                 Text(
                     text = "Virtual Tour",
                     fontSize = 10.sp,
-                    style = MaterialTheme.typography.h3
+                    style = MaterialTheme.typography.h3,
+                    color = Color.White
                 )
             }
         }
