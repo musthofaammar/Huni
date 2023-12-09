@@ -8,97 +8,113 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.navigation.navigate
 import id.eureka.hunicompose.core.routes.NavigationItem
 import id.eureka.hunicompose.core.routes.Screen
-import id.eureka.hunicompose.detailhuni.DetailHuniScreen
-import id.eureka.hunicompose.home.HomeScreen
-import id.eureka.hunicompose.onboarding.OnBoardingScreen
-import id.eureka.hunicompose.splash.SplashScreen
+import id.eureka.hunicompose.destinations.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HuniApp(
-    modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()
+    modifier: Modifier = Modifier,
 ) {
+    val navController = rememberNavController()
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = navController.appCurrentDestinationAsState().value
+        ?: NavGraphs.root.startAppDestination
 
-    val listNoBottomBar =
-        listOf(Screen.DetailHuni.route, Screen.Splash.route, Screen.OnBoarding.route)
+    val listNoBottomBar = remember {
+        listOf(DetailHuniScreenDestination, SplashScreenDestination, OnBoardingScreenDestination)
+    }
 
     Scaffold(
         bottomBar = { if (currentRoute !in listNoBottomBar) BottomBar(navController) },
         modifier = modifier
     ) { innerPadding ->
-        NavHost(
+
+        DestinationsNavHost(
             navController = navController,
-            startDestination = Screen.Splash.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Splash.route) {
-                SplashScreen(goToNextScreen = {
-                    navController.navigate(Screen.OnBoarding.route) {
-                        popUpTo(Screen.Splash.route) {
-                            inclusive = true
-                        }
-                    }
+            navGraph = NavGraphs.root,
+            modifier = Modifier
+                .padding(innerPadding)
+                .semantics {
+                    testTagsAsResourceId = true
                 })
-            }
-            composable(Screen.OnBoarding.route) {
-                OnBoardingScreen(goToNextScreen = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.OnBoarding.route) {
-                            inclusive = true
-                        }
-                    }
-                })
-            }
-            composable(Screen.Home.route) {
-                HomeScreen(onItemClick = {
-                    navController.navigate(Screen.DetailHuni.route) {
-                        popUpTo(Screen.Home.route)
-                    }
-                })
-            }
-            composable(Screen.DetailHuni.route) {
-                DetailHuniScreen(onBack = {
-                    navController.navigateUp()
-                })
-            }
-        }
     }
+
+//        NavHost(
+//            navController = navController,
+//            startDestination = Screen.Splash.route,
+//            modifier = Modifier
+//                .padding(innerPadding)
+//                .semantics {
+//                    testTagsAsResourceId = true
+//                }
+//        ) {
+//            composable(Screen.Splash.route) {
+//                SplashScreen(goToNextScreen = {
+//                    navController.navigate(Screen.OnBoarding.route) {
+//                        popUpTo(Screen.Splash.route) {
+//                            inclusive = true
+//                        }
+//                    }
+//                })
+//            }
+//            composable(Screen.OnBoarding.route) {
+//                OnBoardingScreen(goToNextScreen = {
+//                    navController.navigate(Screen.Home.route) {
+//                        popUpTo(Screen.OnBoarding.route) {
+//                            inclusive = true
+//                        }
+//                    }
+//                })
+//            }
+//            composable(Screen.Home.route) {
+//                HomeScreen(onItemClick = {
+//                    navController.navigate(Screen.DetailHuni.route) {
+//                        popUpTo(Screen.Home.route)
+//                    }
+//                })
+//            }
+//            composable(Screen.DetailHuni.route) {
+//                DetailHuniScreen(onBack = {
+//                    navController.navigateUp()
+//                })
+//            }
+//        }
 }
 
 
 @Composable
 fun BottomBar(
-    navController: NavHostController,
+    navController: NavController,
     modifier: Modifier = Modifier,
 ) {
     BottomNavigation(
         backgroundColor = Color.White, elevation = 10.dp, modifier = modifier
     ) {
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+        val currentDestination = navController.appCurrentDestinationAsState().value
+            ?: NavGraphs.root.startAppDestination
 
         val navigationItems = listOf(
-            NavigationItem(Icons.Default.Home, Screen.Home),
-            NavigationItem(Icons.Default.Chat, Screen.Message),
-            NavigationItem(Icons.Default.WorkOutline, Screen.Post),
-            NavigationItem(Icons.Default.Bookmark, Screen.Bookmark),
-            NavigationItem(Icons.Default.Person, Screen.Profile),
+            NavigationItem(HomeScreenDestination, Icons.Default.Home, Screen.Home),
+            NavigationItem(NestedLazyColumnDestination, Icons.Default.Chat, Screen.Message),
+            NavigationItem(HomeScreenDestination, Icons.Default.WorkOutline, Screen.Post),
+            NavigationItem(HomeScreenDestination, Icons.Default.Bookmark, Screen.Bookmark),
+            NavigationItem(HomeScreenDestination, Icons.Default.Person, Screen.Profile),
         )
 
         navigationItems.map { item ->
@@ -108,8 +124,8 @@ fun BottomBar(
                     contentDescription = null,
                     tint = colorResource(id = R.color.deep_sapphire)
                 )
-            }, selected = currentRoute == item.screen.route, onClick = {
-                navController.navigate(item.screen.route) {
+            }, selected = currentDestination == item.direction, onClick = {
+                navController.navigate(item.direction) {
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }

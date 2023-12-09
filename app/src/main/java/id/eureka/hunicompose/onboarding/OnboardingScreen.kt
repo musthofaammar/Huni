@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -20,15 +21,20 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import id.eureka.hunicompose.R
+import id.eureka.hunicompose.core.routes.Screen
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.theme.KanitFont
 import id.eureka.hunicompose.core.util.GradientButton
+import id.eureka.hunicompose.destinations.HomeScreenDestination
 
+@Destination
 @Composable
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
-    goToNextScreen: () -> Unit
+    navigator: DestinationsNavigator
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val height = (LocalConfiguration.current.screenHeightDp * 0.65).dp
@@ -93,7 +99,14 @@ fun OnBoardingScreen(
                         colorResource(id = R.color.deep_sapphire),
                     ),
                 ),
-                onClick = goToNextScreen,
+                onClick = {
+                    navigator.navigate(HomeScreenDestination()) {
+                        popUpTo(Screen.OnBoarding.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                modifier = Modifier.testTag("button_get_started")
             )
         }
     }
@@ -103,6 +116,6 @@ fun OnBoardingScreen(
 @Composable
 fun OnBoardingScreenPreview() {
     HuniComposeTheme {
-        OnBoardingScreen(goToNextScreen = {})
+//        OnBoardingScreen(goToNextScreen = {})
     }
 }

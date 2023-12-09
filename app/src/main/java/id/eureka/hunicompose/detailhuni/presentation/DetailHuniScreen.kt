@@ -1,11 +1,14 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
 import android.content.Intent
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,56 +23,111 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
 import id.eureka.hunicompose.core.util.GradientButton
 import id.eureka.hunicompose.core.util.Utils
+import id.eureka.hunicompose.core.util.Utils.stringToPeriod
 import id.eureka.hunicompose.core.util.customTabIndicatorOffset
-import id.eureka.hunicompose.home.HuniRentPeriod
+import id.eureka.hunicompose.detailhuni.data.model.Facilities
+import id.eureka.hunicompose.detailhuni.data.model.Review
+import id.eureka.hunicompose.home.presentation.HuniRentPeriod
+import id.eureka.hunicompose.home.presentation.model.Huni
 import id.eureka.hunicompose.virtualtour.VirtualTourActivity
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
+@Destination
 @Composable
 fun DetailHuniScreen(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit
+    viewModel: DetailHuniViewModel = viewModel(),
+    navigator: DestinationsNavigator,
+    huni: Huni,
 ) {
+
+    LaunchedEffect(true) {
+        viewModel.setHuniDetail(huni)
+    }
+
+    val huniData by viewModel.huni.collectAsState()
+    val reviewSelectedRate by viewModel.selectedRate.collectAsState()
+    val reviewCounts by viewModel.reviewCounts.collectAsState()
+    val filteredReview by viewModel.filteredReviews.collectAsState()
+
+    val lazyListState = rememberLazyListState()
+    val showBottomInfo by remember {
+        derivedStateOf { !lazyListState.isScrollInProgress }
+    }
+    val coroutineScope = rememberCoroutineScope()
+
     Box(modifier = modifier) {
-        LazyColumn {
+        LazyColumn(
+            state = lazyListState
+        ) {
             item {
-                HeaderDetailHuni(onBack = onBack)
+                HeaderDetailHuni(onBack = { navigator.navigateUp() }, huni = huniData)
             }
 
             item {
-                HuniGeneralInfo(
-                    name = "Griya Asri Cempaka Raya",
-                    address = "Jl. Tukad Balian, Renon, No. 78",
-                    ownerName = "Ahmad Lee",
-                    star = 4.7
-                )
+                huniData?.let {
+                    HuniGeneralInfo(
+                        name = it.name,
+                        address = it.address,
+                        ownerName = it.ownerName,
+                        rate = it.rate
+                    )
+                }
             }
 
             item {
-                HuniDetailInfoTab()
+                huniData?.let {
+                    HuniDetailInfoTab(it.facilities,
+                        it.description,
+                        reviewCounts,
+                        filteredReview,
+                        reviewSelectedRate,
+                        viewModel::setSelectedRate
+                    ) {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(lazyListState.layoutInfo.totalItemsCount - 1)
+                        }
+                    }
+                }
             }
         }
 
-        HuniBottomInfo(
-            price = 24000000.0,
-            period = HuniRentPeriod.Month,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        AnimatedVisibility(
+            visible = showBottomInfo,
+            enter = fadeIn() + slideInVertically() { fullHeight ->
+                fullHeight / 2
+            },
+            exit = fadeOut() + slideOutVertically() { fullHeight ->
+                fullHeight / 2
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        ) {
+            huniData?.let {
+                HuniBottomInfo(
+                    price = it.price,
+                    period = stringToPeriod(it.rentPeriod)
+                )
+            }
+        }
     }
 }
 
@@ -126,7 +184,15 @@ fun HuniBottomInfo(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HuniDetailInfoTab() {
+fun HuniDetailInfoTab(
+    facilities: List<Facilities>,
+    description: String,
+    reviewCounts: List<Int>,
+    filteredReviews: List<Review>,
+    filterReviewSelected: Int,
+    onFilterReviewClick: (Int) -> Unit,
+    scrollToEnd: () -> Unit,
+) {
     val scope = rememberCoroutineScope()
     val tabs = remember {
         listOf("Details", "Maps", "Reviews")
@@ -135,7 +201,7 @@ fun HuniDetailInfoTab() {
     val tabPagerState = rememberPagerState()
 
     val density = LocalDensity.current
-    val tabWidths = remember {
+    val tabWidths = remember(tabs) {
         val tabWidthStateList = mutableStateListOf<Dp>()
         repeat(tabs.size) {
             tabWidthStateList.add(0.dp)
@@ -157,7 +223,7 @@ fun HuniDetailInfoTab() {
             )
         },
     ) {
-        tabs.forEachIndexed { tabIndex, s ->
+        tabs.forEachIndexed { tabIndex, tabTitle ->
             Tab(
                 selected = tabIndex == tabPagerState.currentPage,
                 onClick = {
@@ -167,7 +233,7 @@ fun HuniDetailInfoTab() {
                 },
                 text = {
                     Text(
-                        text = s,
+                        text = tabTitle,
                         style = MaterialTheme.typography.h3,
                         fontSize = 18.sp,
                         color = if (tabPagerState.currentPage == tabIndex) colorResource(
@@ -190,12 +256,18 @@ fun HuniDetailInfoTab() {
     ) { page ->
         when (page) {
             0 -> DetailHuniTab(
-                facilities = Utils.dummyFacilities(),
-                description = "Located in Denpasar, Bali, this 5-bedroom griya is available for monthly rent. Situated in an exclusive area, this griya is easily accessed by a well-paved road. The property is close to the famous Goemerot Restaurant, White asllasldansjdnj asdnjasndjna hiasdiah askmdkasmkdm nasjdnajsdn"
+                facilities = facilities,
+                description = description,
+                scrollToEnd = scrollToEnd
             )
 
             1 -> MapTab()
-            2 -> ReviewsTab(reviewCount = Random.nextInt(5, 10))
+            2 -> ReviewsTab(
+                reviewCounts = reviewCounts,
+                filterReviewSelected = filterReviewSelected,
+                onFilterReviewClick = onFilterReviewClick,
+                filteredReviews = filteredReviews
+            )
         }
     }
 }
@@ -205,7 +277,7 @@ fun HuniGeneralInfo(
     name: String,
     address: String,
     ownerName: String,
-    star: Double,
+    rate: Double,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -226,11 +298,14 @@ fun HuniGeneralInfo(
                 text = name,
                 style = MaterialTheme.typography.h3,
                 fontSize = 18.sp,
-                color = colorResource(id = R.color.onyx),
+                color = MaterialTheme.colors.onPrimary,
+                modifier = Modifier.weight(8.5f)
             )
 
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.weight(1.5f)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Star,
@@ -242,7 +317,7 @@ fun HuniGeneralInfo(
                 )
 
                 Text(
-                    text = "$star",
+                    text = String.format("%.1f", rate),
                     style = MaterialTheme.typography.h4,
                     color = colorResource(id = R.color.silver_chalice),
                     fontSize = 16.sp
@@ -255,17 +330,19 @@ fun HuniGeneralInfo(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 2.dp)
+                .padding(top = 6.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(7f)
             ) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = null,
-                    tint = colorResource(id = R.color.onyx),
+                    tint = MaterialTheme.colors.onPrimary,
                     modifier = Modifier
                         .size(12.dp)
+                        .padding(end = 4.dp)
                 )
 
                 Text(
@@ -276,16 +353,22 @@ fun HuniGeneralInfo(
                 )
             }
 
+            Spacer(modifier = Modifier.width(8.dp))
+
             Button(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
                     context.startActivity(Intent(context, VirtualTourActivity::class.java))
-                }
+                },
+                modifier = Modifier
+                    .weight(3f)
+                    .testTag("virtual_tour_button")
             ) {
                 Text(
                     text = "Virtual Tour",
                     fontSize = 10.sp,
-                    style = MaterialTheme.typography.h3
+                    style = MaterialTheme.typography.h3,
+                    color = Color.White
                 )
             }
         }
@@ -385,15 +468,11 @@ fun HuniGeneralInfo(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
-
-    val images = remember {
-        listOf(
-            R.drawable.hotel_1,
-            R.drawable.hotel_3,
-            R.drawable.hotel_5
-        )
-    }
+fun HeaderDetailHuni(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    huni: Huni?,
+) {
 
     val pagerState = rememberPagerState()
 
@@ -402,11 +481,11 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
     ) {
 
         HorizontalPager(
-            count = images.size,
+            count = huni?.images?.size ?: 0,
             state = pagerState
         ) { page ->
             Image(
-                painter = painterResource(id = images[page]),
+                painter = painterResource(id = huni?.images?.get(page) ?: 0),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -446,7 +525,7 @@ fun HeaderDetailHuni(modifier: Modifier = Modifier, onBack: () -> Unit) {
         }
 
         ImageIndicator(
-            itemCount = images.size,
+            itemCount = huni?.images?.size ?: 0,
             pagerState = pagerState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -493,7 +572,7 @@ fun Indicator(modifier: Modifier = Modifier, isSelected: Boolean) {
 @Composable
 fun DetailHuniScreenPreview() {
     HuniComposeTheme {
-        DetailHuniScreen(onBack = {})
+//        DetailHuniScreen(onBack = {})
     }
 }
 
@@ -505,7 +584,7 @@ fun HuniGeneralInfo() {
             name = "Griya Asri Cempaka Raya",
             address = "Jl. Tukad Balian, Renon, No. 78",
             ownerName = "Ahmad Lee",
-            star = 4.7
+            rate = 4.7
         )
     }
 }

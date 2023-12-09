@@ -1,27 +1,22 @@
-@file:OptIn(ExperimentalSnapperApi::class)
+@file:OptIn(ExperimentalSnapperApi::class, ExperimentalFoundationApi::class)
 
-package id.eureka.hunicompose.home
+package id.eureka.hunicompose.home.presentation
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -31,6 +26,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
@@ -40,15 +38,29 @@ import id.eureka.hunicompose.core.theme.KanitFont
 import id.eureka.hunicompose.core.util.HuniCategory
 import id.eureka.hunicompose.core.util.SearchBar
 import id.eureka.hunicompose.core.util.SectionWithTitleAndSeeAll
-import id.eureka.hunicompose.core.util.Utils
+import id.eureka.hunicompose.core.util.Utils.stringToPeriod
+import id.eureka.hunicompose.destinations.DetailHuniScreenDestination
+import id.eureka.hunicompose.home.presentation.model.HomeUIState
 
+@Destination
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit
+    viewModel: HomeViewModel = viewModel(),
+    navigator: DestinationsNavigator,
 ) {
+    val nearbyState by viewModel.nearbyUIState.collectAsState()
+    val popularState by viewModel.popularUIState.collectAsState()
 
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier.testTag("content_list")) {
+
+        if (nearbyState is HomeUIState.Init) {
+            viewModel.getHuniNearby()
+        }
+
+        if (popularState is HomeUIState.Init) {
+            viewModel.getHuniPopular()
+        }
 
         item {
             HomeHeader(userName = "Naufintya", location = "Bali, Indonesia")
@@ -64,17 +76,21 @@ fun HomeScreen(
                 onTextChanged = {
                     query = it
                 },
-                modifier = Modifier.padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .testTag("search_bar")
             )
         }
 
         item {
-            HuniNearbyLocations(onItemClick = onItemClick)
+            HuniNearbyLocations(navigator = navigator, screenState = nearbyState)
         }
 
-        item {
-            HuniPopular(modifier = Modifier.padding(top = 32.dp), onItemClick = onItemClick)
-        }
+        HuniPopular(
+            modifier = Modifier.padding(top = 32.dp),
+            navigator = navigator,
+            popularState
+        )
     }
 }
 
@@ -196,7 +212,7 @@ fun HuniCategories(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
     ) {
-        items(categories) { item ->
+        items(categories, key = { it.title }) { item ->
             HuniCategory(
                 title = item.title,
                 titleColor = colorResource(id = R.color.deep_sapphire),
@@ -211,15 +227,18 @@ fun HuniCategories(
 @Composable
 fun HuniNearbyLocations(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit
+    navigator: DestinationsNavigator,
+    screenState: HomeUIState,
 ) {
 
     val lazyListState = rememberLazyListState()
 
-    SectionWithTitleAndSeeAll(
-        title = "Nearby Your Location",
-        modifier = modifier
-    ) {
+    Column {
+        SectionWithTitleAndSeeAll(
+            title = "Nearby Your Location",
+            modifier = modifier
+        )
+
         LazyRow(
             state = lazyListState,
             contentPadding = PaddingValues(horizontal = 24.dp),
@@ -228,51 +247,89 @@ fun HuniNearbyLocations(
                 lazyListState = lazyListState,
                 snapOffsetForItem = SnapOffsets.Start
             ),
+            modifier = Modifier.testTag("nearby_list")
         ) {
-            items(Utils.dummyHuniItem()) { item ->
-                HuniItemShort(
-                    name = item.name,
-                    address = item.address,
-                    star = item.rate,
-                    price = item.price,
-                    period = item.rentPeriod,
-                    image = painterResource(id = item.image),
-                    modifier = Modifier.clickable(onClick = onItemClick)
-                )
+            when (screenState) {
+                is HomeUIState.HuniNearbyLoaded -> {
+                    items(screenState.data, key = { it.id }) { item ->
+                        HuniItemShort(
+                            name = item.name,
+                            address = item.address,
+                            star = item.rate,
+                            price = item.price,
+                            period = stringToPeriod(item.rentPeriod),
+                            image = painterResource(id = item.images.first()),
+                            onClick = {
+                                navigator.navigate(
+                                    DetailHuniScreenDestination(
+                                        huni = item
+                                    )
+                                )
+                            },
+                            modifier = Modifier.animateItemPlacement()
+                        )
+                    }
+                }
+                is HomeUIState.Loading -> {
+                    items(4, key = { it }) {
+                        HuniItemShortLoading()
+                    }
+                }
+                else -> Unit
             }
         }
     }
 }
 
-@Composable
-fun HuniPopular(
+fun LazyListScope.HuniPopular(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit
+    navigator: DestinationsNavigator,
+    screenState: HomeUIState,
 ) {
-    SectionWithTitleAndSeeAll(
-        title = "Popular",
-        modifier = modifier
-    ) {
 
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .animateContentSize()
-        ) {
-            Utils.dummyHuniItem().forEach { item ->
+    item {
+        SectionWithTitleAndSeeAll(
+            title = "Popular",
+            modifier = modifier
+        )
+    }
+
+    when (screenState) {
+        is HomeUIState.HuniPopularLoaded -> {
+            items(screenState.data, key = { it.id }) { item ->
                 HuniItemLong(
                     name = item.name,
                     address = item.address,
                     star = item.rate,
                     price = item.price,
-                    period = item.rentPeriod,
-                    image = painterResource(id = item.image),
+                    period = stringToPeriod(item.rentPeriod),
+                    image = painterResource(id = item.images.first()),
                     modifier = Modifier
-                        .clickable(onClick = onItemClick)
-                        .padding(bottom = 12.dp)
+                        .padding(bottom = 12.dp, start = 24.dp, end = 24.dp)
+                        .clickable(onClick = {
+                            navigator.navigate(
+                                DetailHuniScreenDestination(
+                                    huni = item
+                                )
+                            )
+                        })
+                        .animateItemPlacement()
                 )
             }
         }
+        is HomeUIState.Loading -> {
+            items(4) {
+                HuniItemLongLoading(
+                    modifier = Modifier
+                        .padding(
+                            bottom = 12.dp,
+                            start = 24.dp,
+                            end = 24.dp
+                        )
+                )
+            }
+        }
+        else -> Unit
     }
 }
 
@@ -280,7 +337,7 @@ fun HuniPopular(
 @Composable
 fun HomeScreenPreview() {
     HuniComposeTheme {
-        HomeScreen(onItemClick = {})
+//        HomeScreen()
     }
 }
 
@@ -304,14 +361,6 @@ fun HuniCategoriesPreview() {
 @Composable
 fun HuniNearbyLocationsPreview() {
     HuniComposeTheme {
-        HuniNearbyLocations(onItemClick = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HuniPopularPreview() {
-    HuniComposeTheme {
-        HuniPopular(onItemClick = {})
+//        HuniNearbyLocations(onItemClick = {}, items = Utils.dummyHuniItem())
     }
 }

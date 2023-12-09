@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +40,6 @@ fun VirtualTourNavigator(
     val currentIndex by viewModel.currentIndex.collectAsState()
     val items by viewModel.rooms.collectAsState()
 
-    val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
     Column(
@@ -78,7 +78,9 @@ fun VirtualTourNavigator(
                 lazyListState = lazyListState,
                 snapOffsetForItem = SnapOffsets.Start
             ),
-            modifier = Modifier.padding(PaddingValues(start = 18.dp, end = 18.dp, bottom = 18.dp))
+            modifier = Modifier
+                .padding(PaddingValues(start = 18.dp, end = 18.dp, bottom = 18.dp))
+                .testTag("virtual_room_list")
         ) {
             itemsIndexed(items, key = { _, item -> item.id }) { index, item ->
                 Card(

@@ -1,5 +1,6 @@
 package id.eureka.hunicompose.core.util
 
+import android.graphics.BlurMaskFilter
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -8,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,23 +21,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -81,7 +84,9 @@ fun HuniCategory(
     iconColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    Card(shape = RoundedCornerShape(12.dp), elevation = 10.dp, modifier = modifier) {
+    Card(shape = RoundedCornerShape(12.dp),
+        elevation = 10.dp,
+        modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -214,6 +219,7 @@ fun SearchBar(
                 Icon(
                     painter = painterResource(id = R.drawable.filter),
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier
                         .height(18.dp)
                         .width(16.dp)
@@ -227,7 +233,6 @@ fun SearchBar(
 fun SectionWithTitleAndSeeAll(
     title: String,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -245,7 +250,7 @@ fun SectionWithTitleAndSeeAll(
                 text = title,
                 style = MaterialTheme.typography.h3,
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.onyx)
+                color = MaterialTheme.colors.onPrimary
             )
 
             Text(
@@ -257,8 +262,6 @@ fun SectionWithTitleAndSeeAll(
                 )
             )
         }
-
-        content()
     }
 }
 
@@ -273,7 +276,7 @@ fun SectionWithTitle(
             text = title,
             style = MaterialTheme.typography.h3,
             fontSize = 14.sp,
-            color = colorResource(id = R.color.onyx),
+            color = MaterialTheme.colors.onPrimary,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -328,6 +331,7 @@ fun HuniCategoryPreview() {
 @Composable
 fun ExpandableText(
     text: String,
+    scrollToEnd: () -> Unit,
     modifier: Modifier = Modifier,
     maxLine: Int = 2,
     textStyle: TextStyle = MaterialTheme.typography.h4.copy(
@@ -351,27 +355,32 @@ fun ExpandableText(
     var isExpanded by remember { mutableStateOf(false) }
     var isClickable by remember { mutableStateOf(false) }
     var lastCharIndex by remember { mutableStateOf(0) }
-    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) Int.MAX_VALUE else maxLine)
+    val animateReadMore by animateIntAsState(targetValue = if (isExpanded) 999999 else maxLine)
 
     Box(
         modifier = modifier
-            .clickable { isExpanded = !isExpanded },
+            .clickable {
+                isExpanded = !isExpanded
+            },
     ) {
-        val annotatedText = buildAnnotatedString {
-            if (isClickable) {
-                if (isExpanded) {
-                    append(text)
-                    withStyle(style = showLessStyle) { append(showLessText) }
+        val annotatedText = remember(text, isExpanded, lastCharIndex) {
+            buildAnnotatedString {
+                if (isClickable) {
+                    if (isExpanded) {
+                        append(text)
+                        withStyle(style = ParagraphStyle(textAlign = TextAlign.End)) {
+                            withStyle(style = showLessStyle) { append(showLessText) }
+                        }
+                    } else {
+                        val adjustText =
+                            text.substring(startIndex = 0, endIndex = lastCharIndex)
+                                .dropLast(showMoreText.length)
+                        append(adjustText)
+                        withStyle(style = showMoreStyle) { append(showMoreText) }
+                    }
                 } else {
-                    val adjustText =
-                        text.substring(startIndex = 0, endIndex = lastCharIndex)
-                            .dropLast(showMoreText.length)
-                            .dropLastWhile { Character.isWhitespace(it) || it == '.' }
-                    append(adjustText)
-                    withStyle(style = showMoreStyle) { append(showMoreText) }
+                    append(text)
                 }
-            } else {
-                append(text)
             }
         }
 
@@ -379,12 +388,16 @@ fun ExpandableText(
             text = annotatedText,
             style = textStyle,
             maxLines = animateReadMore,
-            textAlign = TextAlign.Justify,
+            textAlign = TextAlign.Start,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { textLayoutResult ->
                 if (!isExpanded && textLayoutResult.hasVisualOverflow) {
                     isClickable = true
-                    lastCharIndex = textLayoutResult.getLineEnd(maxLine - 1)
+                    lastCharIndex = textLayoutResult.getLineEnd(maxLine - 1, true)
+                }
+
+                if (isExpanded) {
+                    scrollToEnd()
                 }
             },
             modifier = Modifier
@@ -393,6 +406,44 @@ fun ExpandableText(
         )
     }
 }
+
+fun Modifier.shadow(
+    color: Color = Color.Black,
+    borderRadius: Dp = 0.dp,
+    blurRadius: Dp = 0.dp,
+    offsetY: Dp = 0.dp,
+    offsetX: Dp = 0.dp,
+    spread: Dp = 0f.dp,
+    modifier: Modifier = Modifier,
+) = this.then(
+    modifier.drawBehind {
+        this.drawIntoCanvas {
+            val paint = Paint()
+            val frameworkPaint = paint.asFrameworkPaint()
+            val spreadPixel = spread.toPx()
+            val leftPixel = (0f - spreadPixel) + offsetX.toPx()
+            val topPixel = (0f - spreadPixel) + offsetY.toPx()
+            val rightPixel = (this.size.width + spreadPixel)
+            val bottomPixel = (this.size.height + spreadPixel)
+
+            if (blurRadius != 0.dp) {
+                frameworkPaint.maskFilter =
+                    (BlurMaskFilter(blurRadius.toPx(), BlurMaskFilter.Blur.NORMAL))
+            }
+
+            frameworkPaint.color = color.toArgb()
+            it.drawRoundRect(
+                left = leftPixel,
+                top = topPixel,
+                right = rightPixel,
+                bottom = bottomPixel,
+                radiusX = borderRadius.toPx(),
+                radiusY = borderRadius.toPx(),
+                paint
+            )
+        }
+    }
+)
 
 @Preview(showBackground = true)
 @Composable

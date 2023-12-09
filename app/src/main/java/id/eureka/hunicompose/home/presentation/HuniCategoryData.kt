@@ -1,4 +1,4 @@
-package id.eureka.hunicompose.home
+package id.eureka.hunicompose.home.presentation
 
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector

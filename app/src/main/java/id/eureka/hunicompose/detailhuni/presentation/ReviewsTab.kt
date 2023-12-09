@@ -1,6 +1,10 @@
-package id.eureka.hunicompose.detailhuni
+package id.eureka.hunicompose.detailhuni.presentation
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,53 +14,79 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import id.eureka.hunicompose.R
 import id.eureka.hunicompose.core.theme.HuniComposeTheme
-import id.eureka.hunicompose.core.theme.KanitFont
 import id.eureka.hunicompose.core.util.ExpandableText
-import java.util.UUID
-import kotlin.random.Random
+import id.eureka.hunicompose.detailhuni.data.model.Review
 
 @Composable
 fun ReviewsTab(
-    reviewCount: Int,
     modifier: Modifier = Modifier,
+    reviewCounts: List<Int>,
+    filterReviewSelected: Int,
+    filteredReviews: List<Review>,
+    onFilterReviewClick: (Int) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
+        modifier = modifier.fillMaxHeight()
     ) {
-        LazyRow(contentPadding = PaddingValues(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(6) { position ->
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(6, key = { it }) { position ->
                 FilterReviewItem(
                     isShowAll = position == 0,
                     isShowAllText = "All Reviews",
                     rate = 5 - position,
-                    reviewCount = Random.nextInt(1, 100)
+                    isSelected = filterReviewSelected == position,
+                    reviewCount = reviewCounts[position],
+                    modifier = Modifier.clickable {
+                        onFilterReviewClick(position)
+                    }
                 )
             }
         }
 
-        for (i in 0 until reviewCount) {
-            ReviewItem(
-                name = UUID.randomUUID().toString(),
-                rate = Random.nextInt(1, 5),
-                description = UUID.randomUUID().toString(),
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+        if (filteredReviews.isEmpty()) {
+            Box(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(painter = painterResource(id = R.drawable.empty_box),
+                        contentDescription = null)
+
+                    Text(text = "No Data",
+                        style = MaterialTheme.typography.h3,
+                        color = colorResource(id = R.color.deep_sapphire),
+                        fontSize = 16.sp)
+                }
+            }
+        } else {
+            for (i in filteredReviews.indices) {
+                key(filteredReviews[i].id) {
+                    ReviewItem(
+                        name = filteredReviews[i].name,
+                        rate = filteredReviews[i].rate,
+                        description = filteredReviews[i].description,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -65,14 +95,26 @@ fun ReviewsTab(
 fun FilterReviewItem(
     modifier: Modifier = Modifier,
     isShowAll: Boolean,
+    isSelected: Boolean,
     rate: Int,
     isShowAllText: String = "",
     reviewCount: Int,
 ) {
+
+    val color = colorResource(id = R.color.deep_sapphire)
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) color else Color.White,
+        animationSpec = tween(500)
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else color,
+        animationSpec = tween(500)
+    )
+
     Card(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, color = colorResource(id = R.color.deep_sapphire)),
-        backgroundColor = if (isShowAll) colorResource(id = R.color.deep_sapphire) else Color.White,
+        backgroundColor = backgroundColor,
         modifier = modifier
     ) {
         Row(
@@ -80,13 +122,15 @@ fun FilterReviewItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .height(24.dp),
+                .height(24.dp)
         ) {
             if (isShowAll)
-                Text(text = isShowAllText,
+                Text(
+                    text = isShowAllText,
                     style = MaterialTheme.typography.h3,
-                    color = Color.White,
-                    fontSize = 12.sp)
+                    color = textColor,
+                    fontSize = 12.sp
+                )
             else
                 Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
                     for (i in 0 until 5) {
@@ -108,10 +152,12 @@ fun FilterReviewItem(
                     }
                 }
 
-            Text(text = "(${reviewCount})",
+            Text(
+                text = "(${reviewCount})",
                 style = MaterialTheme.typography.h4,
                 color = colorResource(id = R.color.silver_chalice),
-                fontSize = 10.sp)
+                fontSize = 10.sp
+            )
         }
     }
 }
@@ -150,13 +196,14 @@ fun ReviewItem(
                 }
             }
 
-//            ExpandableText(
-//                text = description,
-//                textStyle = MaterialTheme.typography.h4.copy(
-//                    fontSize = 10.sp,
-//                    color = colorResource(id = R.color.onyx)
-//                )
-//            )
+            ExpandableText(
+                text = description,
+                textStyle = MaterialTheme.typography.h4.copy(
+                    fontSize = 10.sp,
+                    color = colorResource(id = R.color.onyx)
+                ),
+                scrollToEnd = {}
+            )
         }
     }
 }
@@ -165,9 +212,7 @@ fun ReviewItem(
 @Composable
 fun ReviewsTabPreview() {
     HuniComposeTheme {
-        ReviewsTab(
-            reviewCount = Random.nextInt(3, 5)
-        )
+//        ReviewsTab()
     }
 }
 
@@ -191,7 +236,8 @@ fun FilterReviewItemWithShowAllPreview() {
             isShowAll = true,
             rate = 0,
             isShowAllText = "All Reviews",
-            reviewCount = 3
+            reviewCount = 3,
+            isSelected = true
         )
     }
 }
@@ -204,7 +250,8 @@ fun FilterReviewItemWithStarPreview() {
             isShowAll = false,
             rate = 3,
             isShowAllText = "All Reviews",
-            reviewCount = 10
+            reviewCount = 10,
+            isSelected = false
         )
     }
 }
